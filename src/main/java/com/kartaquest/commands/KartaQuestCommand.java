@@ -61,7 +61,7 @@ public class KartaQuestCommand implements CommandExecutor, TabCompleter {
                 handleAdminCommand(player, args);
                 break;
             default:
-                player.sendMessage(plugin.getConfigManager().getMessage("unknown-command"));
+                player.sendMessage(plugin.getConfigManager().getMessage("unknown-command", player));
                 break;
         }
 
@@ -91,7 +91,7 @@ public class KartaQuestCommand implements CommandExecutor, TabCompleter {
 
     private void handleCreateCommand(Player player, String[] args) {
         if (args.length < 4 || args.length > 5) {
-            player.sendMessage(plugin.getConfigManager().getMessage("creation-usage")); // Should update usage message
+            player.sendMessage(plugin.getConfigManager().getMessage("creation-usage", player)); // Should update usage message
             return;
         }
 
@@ -100,7 +100,7 @@ public class KartaQuestCommand implements CommandExecutor, TabCompleter {
         long currentContracts = plugin.getContractManager().getActiveContracts().values().stream()
                 .filter(c -> c.creatorUuid().equals(player.getUniqueId())).count();
         if (currentContracts >= maxContracts) {
-            player.sendMessage(plugin.getConfigManager().getMessage("max-contracts-reached", Placeholder.unparsed("max", String.valueOf(maxContracts))));
+            player.sendMessage(plugin.getConfigManager().getMessage("max-contracts-reached", player, Placeholder.unparsed("max", String.valueOf(maxContracts))));
             return;
         }
 
@@ -108,7 +108,7 @@ public class KartaQuestCommand implements CommandExecutor, TabCompleter {
         try {
             material = Material.valueOf(args[1].toUpperCase());
         } catch (IllegalArgumentException e) {
-            player.sendMessage(plugin.getConfigManager().getMessage("invalid-item", Placeholder.unparsed("item", args[1])));
+            player.sendMessage(plugin.getConfigManager().getMessage("invalid-item", player, Placeholder.unparsed("item", args[1])));
             return;
         }
 
@@ -116,11 +116,11 @@ public class KartaQuestCommand implements CommandExecutor, TabCompleter {
         try {
             amount = Integer.parseInt(args[2]);
             if (amount <= 0) {
-                player.sendMessage(plugin.getConfigManager().getMessage("invalid-amount"));
+                player.sendMessage(plugin.getConfigManager().getMessage("invalid-amount", player));
                 return;
             }
         } catch (NumberFormatException e) {
-            player.sendMessage(plugin.getConfigManager().getMessage("invalid-amount"));
+            player.sendMessage(plugin.getConfigManager().getMessage("invalid-amount", player));
             return;
         }
 
@@ -128,11 +128,11 @@ public class KartaQuestCommand implements CommandExecutor, TabCompleter {
         try {
             price = Double.parseDouble(args[3]);
             if (price <= 0) {
-                player.sendMessage(plugin.getConfigManager().getMessage("invalid-price"));
+                player.sendMessage(plugin.getConfigManager().getMessage("invalid-price", player));
                 return;
             }
         } catch (NumberFormatException e) {
-            player.sendMessage(plugin.getConfigManager().getMessage("invalid-price"));
+            player.sendMessage(plugin.getConfigManager().getMessage("invalid-price", player));
             return;
         }
 
@@ -150,7 +150,7 @@ public class KartaQuestCommand implements CommandExecutor, TabCompleter {
         double totalCost = price + tax;
 
         if (!plugin.getEconomyManager().has(player, totalCost)) {
-            player.sendMessage(plugin.getConfigManager().getMessage("insufficient-funds",
+            player.sendMessage(plugin.getConfigManager().getMessage("insufficient-funds", player,
                     Placeholder.unparsed("price", String.format("%,.2f", price)),
                     Placeholder.unparsed("tax", String.format("%,.2f", tax))
             ));
@@ -164,7 +164,7 @@ public class KartaQuestCommand implements CommandExecutor, TabCompleter {
         }
 
         plugin.getContractManager().createContract(player.getUniqueId(), player.getName(), material, amount, price, timeLimit);
-        player.sendMessage(plugin.getConfigManager().getMessage("contract-created",
+        player.sendMessage(plugin.getConfigManager().getMessage("contract-created", player,
                 Placeholder.unparsed("amount", String.valueOf(amount)),
                 Placeholder.unparsed("item", material.name()),
                 Placeholder.unparsed("price", String.format("%,.2f", price))
@@ -175,11 +175,11 @@ public class KartaQuestCommand implements CommandExecutor, TabCompleter {
     private void handleStatusCommand(Player player) {
         Contract contract = plugin.getContractManager().getContractByAssignee(player.getUniqueId());
         if (contract == null) {
-            player.sendMessage(plugin.getConfigManager().getMessage("no-active-contract"));
+            player.sendMessage(plugin.getConfigManager().getMessage("no-active-contract", player));
             return;
         }
 
-        player.sendMessage(plugin.getConfigManager().getMessage("contract-status",
+        player.sendMessage(plugin.getConfigManager().getMessage("contract-status", player,
                 Placeholder.unparsed("amount", String.valueOf(contract.itemAmount())),
                 Placeholder.unparsed("item", contract.itemType().name()),
                 Placeholder.unparsed("reward", String.format("%,.2f", contract.reward())),
@@ -189,12 +189,12 @@ public class KartaQuestCommand implements CommandExecutor, TabCompleter {
     private void handleCompleteCommand(Player player) {
         Contract contract = plugin.getContractManager().getContractByAssignee(player.getUniqueId());
         if (contract == null) {
-            player.sendMessage(plugin.getConfigManager().getMessage("no-active-contract"));
+            player.sendMessage(plugin.getConfigManager().getMessage("no-active-contract", player));
             return;
         }
 
         if (!player.getInventory().containsAtLeast(new ItemStack(contract.itemType()), contract.itemAmount())) {
-            player.sendMessage(plugin.getConfigManager().getMessage("not-enough-items",
+            player.sendMessage(plugin.getConfigManager().getMessage("not-enough-items", player,
                     Placeholder.unparsed("amount", String.valueOf(contract.itemAmount())),
                     Placeholder.unparsed("item", contract.itemType().name())
             ));
@@ -207,7 +207,7 @@ public class KartaQuestCommand implements CommandExecutor, TabCompleter {
         plugin.getReputationManager().incrementCompletedContracts(player.getUniqueId());
         plugin.getContractManager().completeContract(contract.contractId());
 
-        player.sendMessage(plugin.getConfigManager().getMessage("contract-completed",
+        player.sendMessage(plugin.getConfigManager().getMessage("contract-completed", player,
                 Placeholder.unparsed("reward", String.format("%,.2f", contract.reward()))
         ));
     }
@@ -215,27 +215,27 @@ public class KartaQuestCommand implements CommandExecutor, TabCompleter {
     private void handleCancelCommand(Player player) {
         Contract contract = plugin.getContractManager().getContractByAssignee(player.getUniqueId());
         if (contract == null) {
-            player.sendMessage(plugin.getConfigManager().getMessage("no-active-contract"));
+            player.sendMessage(plugin.getConfigManager().getMessage("no-active-contract", player));
             return;
         }
 
         plugin.getContractManager().cancelContract(contract.contractId());
         plugin.getReputationManager().removeReputation(player.getUniqueId(), 1);
 
-        player.sendMessage(plugin.getConfigManager().getMessage("contract-cancelled"));
+        player.sendMessage(plugin.getConfigManager().getMessage("contract-cancelled", player));
     }
 
     private void handleClaimCommand(Player player) {
         List<Contract> claimable = plugin.getContractManager().getClaimableContracts(player.getUniqueId());
         if (claimable.isEmpty()) {
-            player.sendMessage(plugin.getConfigManager().getMessage("no-items-to-claim"));
+            player.sendMessage(plugin.getConfigManager().getMessage("no-items-to-claim", player));
             return;
         }
 
         for (Contract contract : claimable) {
             player.getInventory().addItem(new ItemStack(contract.itemType(), contract.itemAmount()));
             plugin.getContractManager().removeContract(contract.contractId());
-            player.sendMessage(plugin.getConfigManager().getMessage("claimed-items",
+            player.sendMessage(plugin.getConfigManager().getMessage("claimed-items", player,
                     Placeholder.unparsed("amount", String.valueOf(contract.itemAmount())),
                     Placeholder.unparsed("item", contract.itemType().name())
             ));
@@ -244,12 +244,12 @@ public class KartaQuestCommand implements CommandExecutor, TabCompleter {
 
     private void handleAdminCommand(Player player, String[] args) {
         if (!player.hasPermission("kartaquest.admin")) {
-            player.sendMessage(plugin.getConfigManager().getMessage("unknown-command")); // Hide admin command
+            player.sendMessage(plugin.getConfigManager().getMessage("unknown-command", player)); // Hide admin command
             return;
         }
 
         if (args.length < 2) {
-            player.sendMessage(plugin.getConfigManager().getMessage("admin-help"));
+            player.sendMessage(plugin.getConfigManager().getMessage("admin-help", player));
             return;
         }
 
@@ -257,7 +257,7 @@ public class KartaQuestCommand implements CommandExecutor, TabCompleter {
         switch (adminSubCommand) {
             case "reload":
                 plugin.getConfigManager().reloadConfig();
-                player.sendMessage(plugin.getConfigManager().getMessage("config-reloaded"));
+                player.sendMessage(plugin.getConfigManager().getMessage("config-reloaded", player));
                 break;
             case "delete":
                 if (args.length < 3) {
@@ -267,17 +267,17 @@ public class KartaQuestCommand implements CommandExecutor, TabCompleter {
                 try {
                     UUID contractId = UUID.fromString(args[2]);
                     if (plugin.getContractManager().getContract(contractId) == null) {
-                        player.sendMessage(plugin.getConfigManager().getMessage("contract-not-found", Placeholder.unparsed("id", args[2])));
+                        player.sendMessage(plugin.getConfigManager().getMessage("contract-not-found", player, Placeholder.unparsed("id", args[2])));
                     } else {
                         plugin.getContractManager().removeContract(contractId);
-                        player.sendMessage(plugin.getConfigManager().getMessage("contract-deleted", Placeholder.unparsed("id", args[2])));
+                        player.sendMessage(plugin.getConfigManager().getMessage("contract-deleted", player, Placeholder.unparsed("id", args[2])));
                     }
                 } catch (IllegalArgumentException e) {
-                    player.sendMessage(plugin.getConfigManager().getMessage("contract-not-found", Placeholder.unparsed("id", args[2])));
+                    player.sendMessage(plugin.getConfigManager().getMessage("contract-not-found", player, Placeholder.unparsed("id", args[2])));
                 }
                 break;
             default:
-                player.sendMessage(plugin.getConfigManager().getMessage("admin-help"));
+                player.sendMessage(plugin.getConfigManager().getMessage("admin-help", player));
                 break;
         }
     }

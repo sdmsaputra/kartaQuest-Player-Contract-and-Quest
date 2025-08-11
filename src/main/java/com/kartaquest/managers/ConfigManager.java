@@ -1,23 +1,30 @@
 package com.kartaquest.managers;
 
 import com.kartaquest.KartaQuest;
-import org.bukkit.configuration.file.FileConfiguration;
-
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ConfigManager {
 
     private final KartaQuest plugin;
     private FileConfiguration config;
-    private MiniMessage miniMessage;
+    private final MiniMessage miniMessage;
+    private final boolean isPapiEnabled;
+    private static final Pattern LEGACY_PLACEHOLDER_PATTERN = Pattern.compile("[{$]([^{}$]+)}");
+
 
     public ConfigManager(KartaQuest plugin) {
         this.plugin = plugin;
         this.miniMessage = MiniMessage.miniMessage();
+        this.isPapiEnabled = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
         loadConfig();
     }
 
@@ -33,11 +40,41 @@ public class ConfigManager {
         config = plugin.getConfig();
     }
 
-    public Component getMessage(String key, TagResolver... placeholders) {
-        String messageFormat = config.getString("messages." + key, "<red>Missing message for key: " + key + "</red>");
-        String prefix = config.getString("messages.prefix", "");
+    private String formatString(OfflinePlayer player, String message) {
+        if (message == null) {
+            return "";
+        }
+        // First, parse PAPI placeholders if PAPI is enabled
+        if (isPapiEnabled && player != null) {
+            message = PlaceholderAPI.setPlaceholders(player, message);
+        }
 
-        return miniMessage.deserialize(prefix + messageFormat, placeholders);
+        // Then, convert our custom {placeholder} and ${placeholder} formats to MiniMessage format <placeholder>
+        Matcher matcher = LEGACY_PLACEHOLDER_PATTERN.matcher(message);
+        StringBuilder sb = new StringBuilder();
+        while (matcher.find()) {
+            matcher.appendReplacement(sb, "<" + matcher.group(1) + ">");
+        }
+        matcher.appendTail(sb);
+
+        return sb.toString();
+    }
+
+    public Component getMessage(String key, OfflinePlayer player, TagResolver... placeholders) {
+        return getMessage(key, player, true, placeholders);
+    }
+
+    public Component getMessage(String key, TagResolver... placeholders) {
+        return getMessage(key, null, true, placeholders);
+    }
+
+    public Component getMessage(String key, OfflinePlayer player, boolean withPrefix, TagResolver... placeholders) {
+        String messageFormat = config.getString("messages." + key, "<red>Missing message for key: " + key + "</red>");
+        String prefix = withPrefix ? config.getString("messages.prefix", "") : "";
+
+        String formattedMessage = formatString(player, prefix + messageFormat);
+
+        return miniMessage.deserialize(formattedMessage, placeholders);
     }
 
     public int getMaxContractsPerPlayer() {
