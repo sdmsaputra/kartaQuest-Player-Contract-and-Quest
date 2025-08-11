@@ -26,7 +26,7 @@ public class ReputationsCommand implements CommandExecutor {
                 return true;
             }
             int reputation = plugin.getReputationManager().getReputation(player.getUniqueId());
-            player.sendMessage(plugin.getConfigManager().getMessage("reputation-check-self",
+            player.sendMessage(plugin.getConfigManager().getMessage("reputation-check-self", player,
                     Placeholder.unparsed("reputation", String.valueOf(reputation))
             ));
             return true;
@@ -34,12 +34,14 @@ public class ReputationsCommand implements CommandExecutor {
 
         if (args.length == 1) {
             OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
+            OfflinePlayer viewer = (sender instanceof Player) ? (Player) sender : null;
+
             if (!target.hasPlayedBefore() && !target.isOnline()) {
-                sender.sendMessage(plugin.getConfigManager().getMessage("player-not-found"));
+                sender.sendMessage(plugin.getConfigManager().getMessage("player-not-found", viewer));
                 return true;
             }
             int reputation = plugin.getReputationManager().getReputation(target.getUniqueId());
-            sender.sendMessage(plugin.getConfigManager().getMessage("reputation-check-other",
+            sender.sendMessage(plugin.getConfigManager().getMessage("reputation-check-other", viewer,
                     Placeholder.unparsed("player", target.getName()),
                     Placeholder.unparsed("reputation", String.valueOf(reputation))
             ));

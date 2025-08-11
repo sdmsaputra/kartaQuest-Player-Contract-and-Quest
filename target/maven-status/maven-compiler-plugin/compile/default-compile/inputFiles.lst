@@ -1,0 +1,14 @@
+/app/src/main/java/com/kartaquest/KartaQuest.java
+/app/src/main/java/com/kartaquest/managers/ContractManager.java
+/app/src/main/java/com/kartaquest/commands/ReputationsCommand.java
+/app/src/main/java/com/kartaquest/utils/DataManager.java
+/app/src/main/java/com/kartaquest/gui/ContractGUI.java
+/app/src/main/java/com/kartaquest/utils/TimeParser.java
+/app/src/main/java/com/kartaquest/expansion/KartaQuestExpansion.java
+/app/src/main/java/com/kartaquest/commands/KartaQuestCommand.java
+/app/src/main/java/com/kartaquest/managers/ReputationManager.java
+/app/src/main/java/com/kartaquest/managers/ConfigManager.java
+/app/src/main/java/com/kartaquest/listeners/GUIListener.java
+/app/src/main/java/com/kartaquest/gui/ContractGUIHolder.java
+/app/src/main/java/com/kartaquest/managers/EconomyManager.java
+/app/src/main/java/com/kartaquest/data/Contract.java

@@ -1,0 +1,58 @@
+# KartaQuest Configuration File
+#
+# All messages support MiniMessage format.
+# Learn more here: https://docs.advntr.dev/minimessage/format.html
+
+# General settings
+max-contracts-per-player: 5
+contract-creation-tax-percent: 5.0
+
+# Messages
+messages:
+  prefix: "<dark_gray>[<gold>KartaQuest<dark_gray>]<reset> "
+
+  # Command Messages
+  player-only-command: "<red>This command can only be run by a player."
+  unknown-command: "<red>Unknown command. Use <yellow>/kartaquest help</yellow> for assistance."
+
+  # Contract Creation
+  contract-created: "<green>Successfully created a contract to collect <aqua>{amount} {item}</aqua> for <gold>${price}</gold>."
+  creation-usage: "<red>Usage: /kartaquest create <item> <amount> <price>"
+  invalid-item: "<red>Invalid item type: <yellow>{item}</yellow>."
+  invalid-amount: "<red>Amount must be a positive number."
+  invalid-price: "<red>Price must be a positive number."
+  insufficient-funds: "<red>You don't have enough money. You need <gold>${price}</gold> plus a <gold>${tax}</gold> tax."
+  max-contracts-reached: "<red>You have reached the maximum of <aqua>{max}</aqua> active contracts."
+
+  # Contract Interaction
+  contract-accepted: "<green>You have accepted the contract to collect <aqua>{amount} {item}</aqua>."
+  cannot-accept-own: "<red>You cannot accept your own contract."
+  already-has-contract: "<red>You already have an active contract. Use <yellow>/kq status</yellow> to see it."
+  no-active-contract: "<gray>You do not have an active contract."
+  contract-status: "<green>Your current contract:\n <gray>Task: <white>Collect {amount} {item}\n <gray>Reward: <gold>${reward}\n <gray>Creator: <white>{creator}"
+  contract-completed: "<green>Contract completed! You earned <gold>${reward}</gold> and <aqua>+1</aqua> reputation."
+  not-enough-items: "<red>You don't have the required items. You need <aqua>{amount} {item}</aqua>."
+  contract-cancelled: "<yellow>You have cancelled your contract and lost <red>1</red> reputation point."
+
+  # Claiming
+  no-items-to-claim: "<gray>You have no completed contracts to claim items from."
+  claimed-items: "<green>Claimed <aqua>{amount} {item}</aqua> from a completed contract."
+
+  # Reputation
+  reputation-check-self: "<gray>Your current reputation is: <aqua>{reputation}</aqua>."
+  reputation-check-other: "<gray>{player}'s reputation is: <aqua>{reputation}</aqua>."
+  player-not-found: "<red>Player not found."
+
+  # GUI
+  gui-title: "<blue>Quest Board (Page {page}/{total_pages})"
+  gui-contract-title: "<gold>Tugas: Kumpulkan {amount} {item}"
+  gui-lore-creator: "<gray>Dibuat oleh: <white>{player}"
+  gui-lore-reward: "<gray>Imbalan: <green>${reward}"
+  gui-lore-accept: "<yellow>Klik untuk menerima kontrak!"
+  gui-lore-time: "<gray>Sisa Waktu: <red>{time}"
+
+  # Admin
+  config-reloaded: "<green>KartaQuest configuration has been reloaded."
+  contract-deleted: "<green>Contract <aqua>{id}</aqua> has been forcefully deleted."
+  contract-not-found: "<red>Contract with ID <aqua>{id}</aqua> not found."
+  admin-help: "<gray>Admin commands: reload, delete <id>"

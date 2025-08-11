@@ -4,7 +4,6 @@ import com.kartaquest.KartaQuest;
 import com.kartaquest.data.Contract;
 import com.kartaquest.utils.TimeParser;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -34,8 +33,7 @@ public class ContractGUI {
         ContractGUIHolder holder = new ContractGUIHolder(page);
 
         int totalPages = Math.max(1, (int) Math.ceil((double) availableContracts.size() / CONTRACTS_PER_PAGE));
-        // We don't add the prefix to the GUI title, so call deserialize directly.
-        Component title = MiniMessage.miniMessage().deserialize(plugin.getConfig().getString("messages.gui-title"),
+        Component title = plugin.getConfigManager().getMessage("gui-title", player, false,
                 Placeholder.unparsed("page", String.valueOf(page + 1)),
                 Placeholder.unparsed("total_pages", String.valueOf(totalPages)));
 
@@ -55,7 +53,7 @@ public class ContractGUI {
         if (page > 0) {
             ItemStack previous = new ItemStack(Material.ARROW);
             ItemMeta prevMeta = previous.getItemMeta();
-            prevMeta.displayName(MiniMessage.miniMessage().deserialize("<gray>Previous Page"));
+            prevMeta.displayName(Component.text("Previous Page")); // This can be made configurable too
             previous.setItemMeta(prevMeta);
             gui.setItem(45, previous); // Bottom-left
         }
@@ -63,7 +61,7 @@ public class ContractGUI {
         if (endIndex < availableContracts.size()) {
             ItemStack next = new ItemStack(Material.ARROW);
             ItemMeta nextMeta = next.getItemMeta();
-            nextMeta.displayName(MiniMessage.miniMessage().deserialize("<gray>Next Page"));
+            nextMeta.displayName(Component.text("Next Page")); // This can be made configurable too
             next.setItemMeta(nextMeta);
             gui.setItem(53, next); // Bottom-right
         }
@@ -74,30 +72,29 @@ public class ContractGUI {
     private ItemStack createContractItem(Contract contract) {
         ItemStack item = new ItemStack(contract.itemType());
         ItemMeta meta = item.getItemMeta();
-        MiniMessage mm = MiniMessage.miniMessage();
 
         // Title
-        String titleFormat = plugin.getConfig().getString("messages.gui-contract-title", "<gold>Tugas: Kumpulkan {amount} {item}");
-        meta.displayName(mm.deserialize(titleFormat,
+        meta.displayName(plugin.getConfigManager().getMessage("gui-contract-title", player, false,
                 Placeholder.unparsed("amount", String.valueOf(contract.itemAmount())),
                 Placeholder.unparsed("item", contract.itemType().name())
         ));
 
         // Lore
         List<Component> lore = new ArrayList<>();
-        String creatorFormat = plugin.getConfig().getString("messages.gui-lore-creator", "<gray>Dibuat oleh: <white>{player}");
-        lore.add(mm.deserialize(creatorFormat, Placeholder.unparsed("player", contract.creatorName())));
+        lore.add(plugin.getConfigManager().getMessage("gui-lore-creator", player, false,
+                Placeholder.unparsed("player", contract.creatorName())));
 
-        String rewardFormat = plugin.getConfig().getString("messages.gui-lore-reward", "<gray>Imbalan: <green>${reward}");
-        lore.add(mm.deserialize(rewardFormat, Placeholder.unparsed("reward", String.format("%,.2f", contract.reward()))));
+        lore.add(plugin.getConfigManager().getMessage("gui-lore-reward", player, false,
+                Placeholder.unparsed("reward", String.format("%,.2f", contract.reward()))));
 
-        String timeFormat = plugin.getConfig().getString("messages.gui-lore-time", "<gray>Sisa Waktu: <red>{time}");
-        lore.add(mm.deserialize(timeFormat, Placeholder.unparsed("time", TimeParser.formatTime(contract.timeLimit()))));
+        if (contract.timeLimit() > 0) {
+            lore.add(plugin.getConfigManager().getMessage("gui-lore-time", player, false,
+                    Placeholder.unparsed("time", TimeParser.formatTime(contract.timeLimit() - System.currentTimeMillis()))));
+        }
 
         lore.add(Component.empty());
 
-        String acceptFormat = plugin.getConfig().getString("messages.gui-lore-accept", "<yellow>Klik untuk menerima kontrak!");
-        lore.add(mm.deserialize(acceptFormat));
+        lore.add(plugin.getConfigManager().getMessage("gui-lore-accept", player, false));
 
         meta.lore(lore);
         item.setItemMeta(meta);
