@@ -4,6 +4,7 @@ import com.kartaquest.KartaQuest;
 import com.kartaquest.data.Contract;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
@@ -22,34 +23,30 @@ public class ContractManager {
     }
 
     public void loadContracts() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                plugin.getDataManager().reloadContractsConfig();
-                ConfigurationSection contractsSection = plugin.getDataManager().getContractsConfig().getConfigurationSection("contracts");
-                if (contractsSection == null) return;
+        plugin.getDataManager().reloadContractsConfig();
+        ConfigurationSection contractsSection = plugin.getDataManager().getContractsConfig().getConfigurationSection("contracts");
+        if (contractsSection == null) return;
 
-                for (String key : contractsSection.getKeys(false)) {
-                    UUID contractId = UUID.fromString(key);
-                    String path = "contracts." + key;
+        for (String key : contractsSection.getKeys(false)) {
+            UUID contractId = UUID.fromString(key);
+            String path = "contracts." + key;
 
-                    UUID creatorUuid = UUID.fromString(plugin.getDataManager().getContractsConfig().getString(path + ".creatorUuid"));
-                    String creatorName = plugin.getDataManager().getContractsConfig().getString(path + ".creatorName");
-                    Material itemType = Material.valueOf(plugin.getDataManager().getContractsConfig().getString(path + ".itemType"));
-                    int itemAmount = plugin.getDataManager().getContractsConfig().getInt(path + ".itemAmount");
-                    double reward = plugin.getDataManager().getContractsConfig().getDouble(path + ".reward");
-                    Contract.ContractStatus status = Contract.ContractStatus.valueOf(plugin.getDataManager().getContractsConfig().getString(path + ".status"));
-                    String assigneeUuidString = plugin.getDataManager().getContractsConfig().getString(path + ".assigneeUuid");
-                    UUID assigneeUuid = assigneeUuidString == null || assigneeUuidString.equals("null") ? null : UUID.fromString(assigneeUuidString);
-                    long creationTimestamp = plugin.getDataManager().getContractsConfig().getLong(path + ".creationTimestamp");
-                    long timeLimit = plugin.getDataManager().getContractsConfig().getLong(path + ".timeLimit");
+            UUID creatorUuid = UUID.fromString(plugin.getDataManager().getContractsConfig().getString(path + ".creatorUuid"));
+            String creatorName = plugin.getDataManager().getContractsConfig().getString(path + ".creatorName");
+            Material itemType = Material.valueOf(plugin.getDataManager().getContractsConfig().getString(path + ".itemType"));
+            int itemAmount = plugin.getDataManager().getContractsConfig().getInt(path + ".itemAmount");
+            double reward = plugin.getDataManager().getContractsConfig().getDouble(path + ".reward");
+            Contract.ContractStatus status = Contract.ContractStatus.valueOf(plugin.getDataManager().getContractsConfig().getString(path + ".status"));
+            String assigneeUuidString = plugin.getDataManager().getContractsConfig().getString(path + ".assigneeUuid");
+            UUID assigneeUuid = assigneeUuidString == null || assigneeUuidString.equals("null") ? null : UUID.fromString(assigneeUuidString);
+            long creationTimestamp = plugin.getDataManager().getContractsConfig().getLong(path + ".creationTimestamp");
+            long timeLimit = plugin.getDataManager().getContractsConfig().getLong(path + ".timeLimit");
+            ItemStack completedItem = plugin.getDataManager().getContractsConfig().getItemStack(path + ".completedItem");
 
-                    Contract contract = new Contract(contractId, creatorUuid, creatorName, itemType, itemAmount, reward, status, assigneeUuid, creationTimestamp, timeLimit);
-                    activeContracts.put(contractId, contract);
-                }
-                plugin.getLogger().info("Loaded " + activeContracts.size() + " contracts.");
-            }
-        }.runTaskAsynchronously(plugin);
+            Contract contract = new Contract(contractId, creatorUuid, creatorName, itemType, itemAmount, reward, status, assigneeUuid, creationTimestamp, timeLimit, completedItem);
+            activeContracts.put(contractId, contract);
+        }
+        plugin.getLogger().info("Loaded " + activeContracts.size() + " contracts.");
     }
 
     public void saveContracts() {
@@ -60,20 +57,41 @@ public class ContractManager {
                 for (Map.Entry<UUID, Contract> entry : activeContracts.entrySet()) {
                     String path = "contracts." + entry.getKey().toString();
                     Contract contract = entry.getValue();
-                    plugin.getDataManager().getContractsConfig().set(path + ".creatorUuid", contract.creatorUuid().toString());
-                    plugin.getDataManager().getContractsConfig().set(path + ".creatorName", contract.creatorName());
-                    plugin.getDataManager().getContractsConfig().set(path + ".itemType", contract.itemType().name());
-                    plugin.getDataManager().getContractsConfig().set(path + ".itemAmount", contract.itemAmount());
-                    plugin.getDataManager().getContractsConfig().set(path + ".reward", contract.reward());
-                    plugin.getDataManager().getContractsConfig().set(path + ".status", contract.status().name());
-                    plugin.getDataManager().getContractsConfig().set(path + ".assigneeUuid", contract.assigneeUuid() != null ? contract.assigneeUuid().toString() : null);
-                    plugin.getDataManager().getContractsConfig().set(path + ".creationTimestamp", contract.creationTimestamp());
-                    plugin.getDataManager().getContractsConfig().set(path + ".timeLimit", contract.timeLimit());
+                    plugin.getDataManager().getContractsConfig().set(path + ".creatorUuid", contract.getCreatorUuid().toString());
+                    plugin.getDataManager().getContractsConfig().set(path + ".creatorName", contract.getCreatorName());
+                    plugin.getDataManager().getContractsConfig().set(path + ".itemType", contract.getItemType().name());
+                    plugin.getDataManager().getContractsConfig().set(path + ".itemAmount", contract.getItemAmount());
+                    plugin.getDataManager().getContractsConfig().set(path + ".reward", contract.getReward());
+                    plugin.getDataManager().getContractsConfig().set(path + ".status", contract.getStatus().name());
+                    plugin.getDataManager().getContractsConfig().set(path + ".assigneeUuid", contract.getAssigneeUuid() != null ? contract.getAssigneeUuid().toString() : null);
+                    plugin.getDataManager().getContractsConfig().set(path + ".creationTimestamp", contract.getCreationTimestamp());
+                    plugin.getDataManager().getContractsConfig().set(path + ".timeLimit", contract.getTimeLimit());
+                    plugin.getDataManager().getContractsConfig().set(path + ".completedItem", contract.getCompletedItem());
                 }
                 plugin.getDataManager().saveContractsConfig();
                 plugin.getLogger().info("Saved " + activeContracts.size() + " contracts.");
             }
         }.runTaskAsynchronously(plugin);
+    }
+
+    public void saveContractsSync() {
+        plugin.getDataManager().getContractsConfig().set("contracts", null); // Clear old data
+        for (Map.Entry<UUID, Contract> entry : activeContracts.entrySet()) {
+            String path = "contracts." + entry.getKey().toString();
+            Contract contract = entry.getValue();
+            plugin.getDataManager().getContractsConfig().set(path + ".creatorUuid", contract.getCreatorUuid().toString());
+            plugin.getDataManager().getContractsConfig().set(path + ".creatorName", contract.getCreatorName());
+            plugin.getDataManager().getContractsConfig().set(path + ".itemType", contract.getItemType().name());
+            plugin.getDataManager().getContractsConfig().set(path + ".itemAmount", contract.getItemAmount());
+            plugin.getDataManager().getContractsConfig().set(path + ".reward", contract.getReward());
+            plugin.getDataManager().getContractsConfig().set(path + ".status", contract.getStatus().name());
+            plugin.getDataManager().getContractsConfig().set(path + ".assigneeUuid", contract.getAssigneeUuid() != null ? contract.getAssigneeUuid().toString() : null);
+            plugin.getDataManager().getContractsConfig().set(path + ".creationTimestamp", contract.getCreationTimestamp());
+            plugin.getDataManager().getContractsConfig().set(path + ".timeLimit", contract.getTimeLimit());
+            plugin.getDataManager().getContractsConfig().set(path + ".completedItem", contract.getCompletedItem());
+        }
+        plugin.getDataManager().saveContractsConfig();
+        plugin.getLogger().info("Saved " + activeContracts.size() + " contracts.");
     }
 
     public void createContract(UUID creatorUuid, String creatorName, Material itemType, int itemAmount, double reward, long timeLimit) {
@@ -88,7 +106,8 @@ public class ContractManager {
                 Contract.ContractStatus.AVAILABLE,
                 null,
                 System.currentTimeMillis(),
-                timeLimit
+                timeLimit,
+                null
         );
         activeContracts.put(contractId, contract);
     }
@@ -99,7 +118,7 @@ public class ContractManager {
 
     public List<Contract> getAvailableContracts() {
         return activeContracts.values().stream()
-                .filter(c -> c.status() == Contract.ContractStatus.AVAILABLE)
+                .filter(c -> c.getStatus() == Contract.ContractStatus.AVAILABLE)
                 .toList();
     }
 
@@ -109,77 +128,44 @@ public class ContractManager {
 
     public boolean hasActiveContract(UUID playerUuid) {
         return activeContracts.values().stream()
-                .anyMatch(c -> c.assigneeUuid() != null && c.assigneeUuid().equals(playerUuid));
+                .anyMatch(c -> c.getAssigneeUuid() != null && c.getAssigneeUuid().equals(playerUuid));
     }
 
     public void acceptContract(UUID contractId, UUID playerUuid) {
-        Contract oldContract = activeContracts.get(contractId);
-        if (oldContract == null || oldContract.status() != Contract.ContractStatus.AVAILABLE) {
+        Contract contract = activeContracts.get(contractId);
+        if (contract == null || contract.getStatus() != Contract.ContractStatus.AVAILABLE) {
             return; // Or throw an exception
         }
-        Contract newContract = new Contract(
-                oldContract.contractId(),
-                oldContract.creatorUuid(),
-                oldContract.creatorName(),
-                oldContract.itemType(),
-                oldContract.itemAmount(),
-                oldContract.reward(),
-                Contract.ContractStatus.IN_PROGRESS,
-                playerUuid,
-                oldContract.creationTimestamp(),
-                oldContract.timeLimit()
-        );
-        activeContracts.put(contractId, newContract);
+        contract.setStatus(Contract.ContractStatus.IN_PROGRESS);
+        contract.setAssigneeUuid(playerUuid);
     }
 
     public Contract getContractByAssignee(UUID playerUuid) {
         return activeContracts.values().stream()
-                .filter(c -> c.status() == Contract.ContractStatus.IN_PROGRESS && playerUuid.equals(c.assigneeUuid()))
+                .filter(c -> c.getStatus() == Contract.ContractStatus.IN_PROGRESS && playerUuid.equals(c.getAssigneeUuid()))
                 .findFirst()
                 .orElse(null);
     }
 
-    public void completeContract(UUID contractId) {
-        Contract oldContract = activeContracts.get(contractId);
-        if (oldContract == null) return;
+    public void completeContract(UUID contractId, ItemStack item) {
+        Contract contract = activeContracts.get(contractId);
+        if (contract == null) return;
 
-        Contract newContract = new Contract(
-                oldContract.contractId(),
-                oldContract.creatorUuid(),
-                oldContract.creatorName(),
-                oldContract.itemType(),
-                oldContract.itemAmount(),
-                oldContract.reward(),
-                Contract.ContractStatus.COMPLETED_UNCLAIMED,
-                oldContract.assigneeUuid(),
-                oldContract.creationTimestamp(),
-                oldContract.timeLimit()
-        );
-        activeContracts.put(contractId, newContract);
+        contract.setStatus(Contract.ContractStatus.COMPLETED_UNCLAIMED);
+        contract.setCompletedItem(item);
     }
 
     public void cancelContract(UUID contractId) {
-        Contract oldContract = activeContracts.get(contractId);
-        if (oldContract == null) return;
+        Contract contract = activeContracts.get(contractId);
+        if (contract == null) return;
 
-        Contract newContract = new Contract(
-                oldContract.contractId(),
-                oldContract.creatorUuid(),
-                oldContract.creatorName(),
-                oldContract.itemType(),
-                oldContract.itemAmount(),
-                oldContract.reward(),
-                Contract.ContractStatus.AVAILABLE,
-                null, // Remove assignee
-                oldContract.creationTimestamp(),
-                oldContract.timeLimit()
-        );
-        activeContracts.put(contractId, newContract);
+        contract.setStatus(Contract.ContractStatus.AVAILABLE);
+        contract.setAssigneeUuid(null);
     }
 
     public List<Contract> getClaimableContracts(UUID creatorUuid) {
         return activeContracts.values().stream()
-                .filter(c -> c.status() == Contract.ContractStatus.COMPLETED_UNCLAIMED && creatorUuid.equals(c.creatorUuid()))
+                .filter(c -> c.getStatus() == Contract.ContractStatus.COMPLETED_UNCLAIMED && creatorUuid.equals(c.getCreatorUuid()))
                 .toList();
     }
 
@@ -188,21 +174,9 @@ public class ContractManager {
     }
 
     public void expireContract(UUID contractId) {
-        Contract oldContract = activeContracts.get(contractId);
-        if (oldContract == null) return;
+        Contract contract = activeContracts.get(contractId);
+        if (contract == null) return;
 
-        Contract newContract = new Contract(
-                oldContract.contractId(),
-                oldContract.creatorUuid(),
-                oldContract.creatorName(),
-                oldContract.itemType(),
-                oldContract.itemAmount(),
-                oldContract.reward(),
-                Contract.ContractStatus.EXPIRED,
-                oldContract.assigneeUuid(),
-                oldContract.creationTimestamp(),
-                oldContract.timeLimit()
-        );
-        activeContracts.put(contractId, newContract);
+        contract.setStatus(Contract.ContractStatus.EXPIRED);
     }
 }

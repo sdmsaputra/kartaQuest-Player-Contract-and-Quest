@@ -54,11 +54,11 @@ public final class KartaQuest extends JavaPlugin {
             public void run() {
                 long now = System.currentTimeMillis();
                 getContractManager().getActiveContracts().values().stream()
-                        .filter(c -> c.status() == Contract.ContractStatus.AVAILABLE || c.status() == Contract.ContractStatus.IN_PROGRESS)
-                        .filter(c -> c.timeLimit() > 0 && c.timeLimit() < now)
+                        .filter(c -> c.getStatus() == Contract.ContractStatus.AVAILABLE || c.getStatus() == Contract.ContractStatus.IN_PROGRESS)
+                        .filter(c -> c.getTimeLimit() > 0 && c.getTimeLimit() < now)
                         .forEach(c -> {
-                            getLogger().info("Contract " + c.contractId() + " has expired.");
-                            getContractManager().expireContract(c.contractId());
+                            getLogger().info("Contract " + c.getContractId() + " has expired.");
+                            getContractManager().expireContract(c.getContractId());
                         });
             }
         }.runTaskTimer(this, 0L, 20L * 60 * 5); // Check every 5 minutes
@@ -68,10 +68,10 @@ public final class KartaQuest extends JavaPlugin {
     public void onDisable() {
         // Save data on disable
         if (contractManager != null) {
-            contractManager.saveContracts();
+            contractManager.saveContractsSync();
         }
         if (reputationManager != null) {
-            reputationManager.saveReputations();
+            reputationManager.saveReputationsSync();
         }
         getLogger().info("KartaQuest has been disabled!");
     }

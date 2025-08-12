@@ -43,7 +43,7 @@ public class GUIListener implements Listener {
             if (contract == null) return; // Should not happen
 
             // Prevent creator from accepting their own contract
-            if (player.getUniqueId().equals(contract.creatorUuid())) {
+            if (player.getUniqueId().equals(contract.getCreatorUuid())) {
                 player.sendMessage(plugin.getConfigManager().getMessage("cannot-accept-own"));
                 return;
             }
@@ -56,8 +56,8 @@ public class GUIListener implements Listener {
             plugin.getContractManager().acceptContract(contractId, player.getUniqueId());
             player.closeInventory();
             player.sendMessage(plugin.getConfigManager().getMessage("contract-accepted",
-                    Placeholder.unparsed("amount", String.valueOf(contract.itemAmount())),
-                    Placeholder.unparsed("item", contract.itemType().name())
+                    Placeholder.unparsed("amount", String.valueOf(contract.getItemAmount())),
+                    Placeholder.unparsed("item", contract.getItemType().name())
             ));
         }
     }

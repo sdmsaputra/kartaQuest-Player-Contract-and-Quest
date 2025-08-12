@@ -49,20 +49,20 @@ public class KartaQuestExpansion extends PlaceholderExpansion {
 
             case "contracts_created":
                 long createdCount = plugin.getContractManager().getActiveContracts().values().stream()
-                        .filter(c -> c.creatorUuid().equals(player.getUniqueId())).count();
+                        .filter(c -> c.getCreatorUuid().equals(player.getUniqueId())).count();
                 return String.valueOf(createdCount);
 
             case "active_contract_name":
                 Contract activeContract = plugin.getContractManager().getContractByAssignee(player.getUniqueId());
                 if (activeContract != null) {
-                    return "Collect " + activeContract.itemAmount() + " " + activeContract.itemType().name();
+                    return "Collect " + activeContract.getItemAmount() + " " + activeContract.getItemType().name();
                 }
                 return "None";
 
             case "active_contract_reward":
                 Contract activeContractReward = plugin.getContractManager().getContractByAssignee(player.getUniqueId());
                 if (activeContractReward != null) {
-                    return String.format("%,.2f", activeContractReward.reward());
+                    return String.format("%,.2f", activeContractReward.getReward());
                 }
                 return "0.00";
 
