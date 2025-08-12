@@ -71,6 +71,23 @@ public class ReputationManager {
         }.runTaskAsynchronously(plugin);
     }
 
+    public void saveReputationsSync() {
+        // Save reputations
+        plugin.getDataManager().getReputationsConfig().set("reputations", null);
+        for (Map.Entry<UUID, Integer> entry : reputationCache.entrySet()) {
+            plugin.getDataManager().getReputationsConfig().set("reputations." + entry.getKey().toString(), entry.getValue());
+        }
+
+        // Save completed counts
+        plugin.getDataManager().getReputationsConfig().set("completed-contracts", null);
+        for (Map.Entry<UUID, Integer> entry : completedContractsCache.entrySet()) {
+            plugin.getDataManager().getReputationsConfig().set("completed-contracts." + entry.getKey().toString(), entry.getValue());
+        }
+
+        plugin.getDataManager().saveReputationsConfig();
+        plugin.getLogger().info("Saved " + reputationCache.size() + " reputation entries and " + completedContractsCache.size() + " completion records.");
+    }
+
     public int getReputation(UUID playerUuid) {
         return reputationCache.getOrDefault(playerUuid, 0);
     }
