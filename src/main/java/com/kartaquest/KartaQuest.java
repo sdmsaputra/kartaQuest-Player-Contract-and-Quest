@@ -68,10 +68,10 @@ public final class KartaQuest extends JavaPlugin {
     public void onDisable() {
         // Save data on disable
         if (contractManager != null) {
-            contractManager.saveContracts();
+            contractManager.saveContractsSync();
         }
         if (reputationManager != null) {
-            reputationManager.saveReputations();
+            reputationManager.saveReputationsSync();
         }
         getLogger().info("KartaQuest has been disabled!");
     }
