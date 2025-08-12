@@ -76,6 +76,25 @@ public class ContractManager {
         }.runTaskAsynchronously(plugin);
     }
 
+    public void saveContractsSync() {
+        plugin.getDataManager().getContractsConfig().set("contracts", null); // Clear old data
+        for (Map.Entry<UUID, Contract> entry : activeContracts.entrySet()) {
+            String path = "contracts." + entry.getKey().toString();
+            Contract contract = entry.getValue();
+            plugin.getDataManager().getContractsConfig().set(path + ".creatorUuid", contract.creatorUuid().toString());
+            plugin.getDataManager().getContractsConfig().set(path + ".creatorName", contract.creatorName());
+            plugin.getDataManager().getContractsConfig().set(path + ".itemType", contract.itemType().name());
+            plugin.getDataManager().getContractsConfig().set(path + ".itemAmount", contract.itemAmount());
+            plugin.getDataManager().getContractsConfig().set(path + ".reward", contract.reward());
+            plugin.getDataManager().getContractsConfig().set(path + ".status", contract.status().name());
+            plugin.getDataManager().getContractsConfig().set(path + ".assigneeUuid", contract.assigneeUuid() != null ? contract.assigneeUuid().toString() : null);
+            plugin.getDataManager().getContractsConfig().set(path + ".creationTimestamp", contract.creationTimestamp());
+            plugin.getDataManager().getContractsConfig().set(path + ".timeLimit", contract.timeLimit());
+        }
+        plugin.getDataManager().saveContractsConfig();
+        plugin.getLogger().info("Saved " + activeContracts.size() + " contracts.");
+    }
+
     public void createContract(UUID creatorUuid, String creatorName, Material itemType, int itemAmount, double reward, long timeLimit) {
         UUID contractId = UUID.randomUUID();
         Contract contract = new Contract(
