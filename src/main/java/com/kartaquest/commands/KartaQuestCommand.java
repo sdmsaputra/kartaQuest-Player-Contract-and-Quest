@@ -12,6 +12,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -233,13 +234,44 @@ public class KartaQuestCommand implements CommandExecutor, TabCompleter {
         }
 
         for (Contract contract : claimable) {
-            player.getInventory().addItem(new ItemStack(contract.itemType(), contract.itemAmount()));
-            plugin.getContractManager().removeContract(contract.contractId());
-            player.sendMessage(plugin.getConfigManager().getMessage("claimed-items", player,
-                    Placeholder.unparsed("amount", String.valueOf(contract.itemAmount())),
-                    Placeholder.unparsed("item", contract.itemType().name())
-            ));
+            ItemStack itemsToClaim = new ItemStack(contract.itemType(), contract.itemAmount());
+            if (inventoryHasSpace(player.getInventory(), itemsToClaim)) {
+                player.getInventory().addItem(itemsToClaim);
+                plugin.getContractManager().removeContract(contract.contractId());
+                player.sendMessage(plugin.getConfigManager().getMessage("claimed-items", player,
+                        Placeholder.unparsed("amount", String.valueOf(contract.itemAmount())),
+                        Placeholder.unparsed("item", contract.itemType().name())
+                ));
+            } else {
+                player.sendMessage(plugin.getConfigManager().getMessage("inventory-full-claim",
+                        Placeholder.unparsed("amount", String.valueOf(contract.itemAmount())),
+                        Placeholder.unparsed("item", contract.itemType().name())
+                ));
+                // Stop processing claims if one fails due to lack of space
+                break;
+            }
         }
+    }
+
+    private boolean inventoryHasSpace(Inventory inventory, ItemStack item) {
+        int amountNeeded = item.getAmount();
+
+        // Check for existing stacks that can be filled
+        for (ItemStack slot : inventory.getStorageContents()) {
+            if (slot != null && slot.isSimilar(item)) {
+                amountNeeded -= (slot.getMaxStackSize() - slot.getAmount());
+            }
+        }
+        if (amountNeeded <= 0) return true;
+
+        // Check for empty slots
+        for (ItemStack slot : inventory.getStorageContents()) {
+            if (slot == null || slot.getType() == Material.AIR) {
+                amountNeeded -= item.getMaxStackSize();
+            }
+        }
+
+        return amountNeeded <= 0;
     }
 
     private void handleAdminCommand(Player player, String[] args) {

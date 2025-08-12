@@ -37,6 +37,7 @@ messages:
   # Claiming
   no-items-to-claim: "<gray>You have no completed contracts to claim items from."
   claimed-items: "<green>Claimed <aqua>{amount} {item}</aqua> from a completed contract."
+  inventory-full-claim: "<red>Your inventory is full. Cannot claim <aqua>{amount} {item}</aqua>."
 
   # Reputation
   reputation-check-self: "<gray>Your current reputation is: <aqua>{reputation}</aqua>."
