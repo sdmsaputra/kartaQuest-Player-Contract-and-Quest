@@ -9,6 +9,6 @@ depend:
   - PlaceholderAPI
 
 commands:
-  kartapc:
+  kartaplayercontract:
     description: Main command for the Karta PlayerContract plugin.
-    aliases: [kpc, kontrak]
+    aliases: [playercontract, contract]

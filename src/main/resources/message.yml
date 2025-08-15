@@ -1,0 +1,59 @@
+# ----------------------------------------------------------------------------------------------------
+# Message File for KartaPlayerContract
+#
+# All messages support MiniMessage format.
+# Learn more here: https://docs.advntr.dev/minimessage/format.html
+#
+# Placeholders:
+# <player> - Player's name
+# <amount> - An amount
+# <item>   - Item name
+# <price>  - A price
+# <tax>    - A tax amount
+# <reward> - A reward amount
+# <creator>- Contract creator's name
+# <id>     - Contract ID
+# <max>    - A maximum number
+# <reputation> - Reputation points
+# ----------------------------------------------------------------------------------------------------
+
+prefix: "<gray>[<gold>Contract<gray>] "
+
+# General & Error Messages
+player-only-command: "<red>This command can only be run by a player.</red>"
+unknown-command: "<red>Unknown command. Try /contract.</red>"
+player-not-found: "<red>Player not found.</red>"
+no-permission: "<red>You do not have permission to do this.</red>"
+transaction-error: "<red>An unexpected error occurred during the transaction.</red>"
+invalid-item: "<red>Invalid item: '<item>'.</red>"
+invalid-amount: "<red>Invalid amount entered.</red>"
+invalid-price: "<red>Invalid price entered.</red>"
+invalid-time-format: "<red>Invalid time format. Use d(ays), h(ours), m(inutes), s(econds). Example: 7d, 12h, 30m.</red>"
+insufficient-funds: "<red>Insufficient funds. You need <price> + <tax> (tax).</red>"
+
+# Main Commands
+creation-usage: "<yellow>Usage: /contract create <item> <amount> <price> [time_limit]</yellow>"
+max-contracts-reached: "<red>You have reached the maximum of <max> active contracts.</red>"
+contract-created: "<green>Successfully created contract: <amount> <item> for <price>.</green>"
+no-active-contract: "<yellow>You do not have an active contract.</yellow>"
+contract-status: "<gray>Contract Status: <yellow>Bring <amount> <item> for a reward of <reward> from <creator>.</yellow>"
+not-enough-items: "<red>You don't have enough <item> (<amount>) to complete the contract.</red>"
+contract-completed: "<green>Contract completed! You received <reward> and reputation.</green>"
+contract-cancelled: "<yellow>Contract has been cancelled. Your reputation has decreased.</yellow>"
+
+# Item Claiming
+no-items-to-claim: "<yellow>You have no items to claim.</yellow>"
+claimed-items: "<green>You claimed <amount> <item>.</green>"
+inventory-full-claim: "<red>Inventory is full! Cannot claim <amount> <item>.</red>"
+
+# Reputation
+reputation-usage: "<yellow>Usage: /contract reputation [player]</yellow>"
+reputation-check-self: "<gray>Your current reputation: <gold><reputation></gold></gray>"
+reputation-check-other: "<gray><player>'s reputation: <gold><reputation></gold></gray>"
+
+# Admin Commands
+admin-help: "<yellow>Admin Commands: /contract admin <reload|delete> [args]</yellow>"
+admin-delete-usage: "<yellow>Usage: /contract admin delete <contract_id></yellow>"
+config-reloaded: "<green>Configuration and messages reloaded successfully.</green>"
+contract-not-found: "<red>Contract with ID '<id>' not found.</red>"
+contract-deleted: "<green>Contract with ID '<id>' has been deleted.</green>"
