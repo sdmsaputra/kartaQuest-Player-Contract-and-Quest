@@ -1,5 +1,5 @@
 name: KartaPlayerContract
-version: '2.0.1-BETA'
+version: '2.1.3-BETA'
 main: com.playercontract.PlayerContract
 api-version: '1.21'
 author: MinekartaStudio

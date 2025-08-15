@@ -1,4 +1,4 @@
-# Karta PlayerContract - v2.1.1-BETA
+# Karta PlayerContract - v2.1.3-BETA
 
 Karta PlayerContract is a Minecraft plugin that enhances player interaction by creating a formalized system of contracts, tasks, and reputation. It allows players to post jobs for others to complete, fostering a dynamic and player-driven economy.
 
