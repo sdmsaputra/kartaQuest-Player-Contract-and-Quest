@@ -28,8 +28,8 @@ public final class PlayerContract extends JavaPlugin {
         reputationManager = new ReputationManager(this);
 
         // Register commands
-        getCommand("playercontract").setExecutor(new com.playercontract.commands.PlayerContractCommand(this));
-        getCommand("playercontract").setTabCompleter(new com.playercontract.commands.PlayerContractCommand(this));
+        getCommand("kartaplayercontract").setExecutor(new com.playercontract.commands.PlayerContractCommand(this));
+        getCommand("kartaplayercontract").setTabCompleter(new com.playercontract.commands.PlayerContractCommand(this));
 
         // Register listeners
         getServer().getPluginManager().registerEvents(new GUIListener(this), this);
