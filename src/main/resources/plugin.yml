@@ -1,4 +1,4 @@
-name: Player Contract
+name: PlayerContract
 version: '${project.version}'
 main: com.playercontract.PlayerContract
 api-version: '1.21'
