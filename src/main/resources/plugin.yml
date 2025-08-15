@@ -1,4 +1,4 @@
-name: PlayerContract
+name: KartaPlayerContract
 version: '${project.version}'
 main: com.playercontract.PlayerContract
 api-version: '1.21'
@@ -9,6 +9,6 @@ depend:
   - PlaceholderAPI
 
 commands:
-  playercontract:
-    description: Main command for the Player Contract plugin.
-    aliases: [pc, kontrak]
+  kartapc:
+    description: Main command for the Karta PlayerContract plugin.
+    aliases: [kpc, kontrak]
