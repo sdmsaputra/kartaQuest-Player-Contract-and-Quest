@@ -252,4 +252,10 @@ public class ContractManager {
                 .filter(c -> c.status() == Contract.ContractStatus.COMPLETED_UNCLAIMED && playerUuid.equals(c.assigneeUuid()))
                 .toList();
     }
+
+    public List<Contract> getContractsByCreator(UUID creatorUuid) {
+        return activeContracts.values().stream()
+                .filter(c -> c.creatorUuid().equals(creatorUuid))
+                .toList();
+    }
 }
