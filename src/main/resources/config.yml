@@ -6,3 +6,4 @@
 # General settings
 max-contracts-per-player: 5
 contract-creation-tax-percent: 5.0
+admin-permission: "karta.admin"

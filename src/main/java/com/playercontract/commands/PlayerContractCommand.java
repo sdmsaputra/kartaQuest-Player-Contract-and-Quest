@@ -72,6 +72,14 @@ public class PlayerContractCommand implements CommandExecutor, TabCompleter {
             case "reputation":
                 handleReputationCommand(sender, args, label);
                 break;
+            case "reload":
+                if (!sender.hasPermission(plugin.getConfigManager().getAdminPermission())) {
+                    sender.sendMessage(plugin.getConfigManager().getMessage("unknown-command", (Player) sender));
+                    return true;
+                }
+                plugin.getConfigManager().reloadConfig();
+                sender.sendMessage(plugin.getConfigManager().getMessage("config-reloaded", (Player) sender));
+                break;
             default:
                 player.sendMessage(plugin.getConfigManager().getMessage("unknown-command", player));
                 break;
@@ -91,9 +99,12 @@ public class PlayerContractCommand implements CommandExecutor, TabCompleter {
                     completions.add(s);
                 }
             }
-            if (sender.hasPermission("kartaquest.admin")) {
+            if (sender.hasPermission(plugin.getConfigManager().getAdminPermission())) {
                 if ("admin".startsWith(args[0].toLowerCase())) {
                     completions.add("admin");
+                }
+                if ("reload".startsWith(args[0].toLowerCase())) {
+                    completions.add("reload");
                 }
             }
             return completions;
@@ -286,7 +297,7 @@ public class PlayerContractCommand implements CommandExecutor, TabCompleter {
     }
 
     private void handleAdminCommand(Player player, String[] args, String label) {
-        if (!player.hasPermission("kartaquest.admin")) {
+        if (!player.hasPermission(plugin.getConfigManager().getAdminPermission())) {
             player.sendMessage(plugin.getConfigManager().getMessage("unknown-command", player)); // Hide admin command
             return;
         }
