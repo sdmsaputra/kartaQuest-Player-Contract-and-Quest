@@ -9,7 +9,7 @@
 /app/src/main/java/com/playercontract/managers/EconomyManager.java
 /app/src/main/java/com/playercontract/managers/ContractManager.java
 /app/src/main/java/com/playercontract/gui/PlayerInventoryGUIHolder.java
-/app/src/main/java/com/playercontract/utils/DataManager.java
 /app/src/main/java/com/playercontract/data/Contract.java
+/app/src/main/java/com/playercontract/utils/DataManager.java
 /app/src/main/java/com/playercontract/utils/TimeParser.java
 /app/src/main/java/com/playercontract/PlayerContract.java

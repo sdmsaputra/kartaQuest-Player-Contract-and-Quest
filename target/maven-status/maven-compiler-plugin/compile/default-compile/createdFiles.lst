@@ -1,6 +1,6 @@
 com/playercontract/managers/ReputationManager.class
-com/playercontract/utils/DataManager.class
 com/playercontract/managers/ReputationManager$2.class
+com/playercontract/utils/DataManager.class
 com/playercontract/PlayerContract$1.class
 com/playercontract/managers/ConfigManager.class
 com/playercontract/gui/PlayerInventoryGUI$1.class
@@ -16,7 +16,7 @@ com/playercontract/managers/ContractManager$1.class
 com/playercontract/gui/ContractGUIHolder.class
 com/playercontract/gui/ContractGUI.class
 com/playercontract/utils/TimeParser.class
-com/playercontract/PlayerContract.class
 com/playercontract/data/Contract.class
+com/playercontract/PlayerContract.class
 com/playercontract/gui/PlayerInventoryGUI.class
 com/playercontract/managers/ReputationManager$1.class
