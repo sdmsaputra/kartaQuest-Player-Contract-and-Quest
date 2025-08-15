@@ -1,6 +1,6 @@
-name: KartaQuest
-version: '1.0-SNAPSHOT'
-main: com.kartaquest.KartaQuest
+name: PlayerContract
+version: '2.0.0-BETA'
+main: com.playercontract.PlayerContract
 api-version: '1.21'
 author: MinekartaStudio
 description: A quest/contract board plugin for PaperMC.
@@ -9,9 +9,6 @@ depend:
   - PlaceholderAPI
 
 commands:
-  kartaquest:
-    description: Main command for the KartaQuest plugin.
-    aliases: [quest, quests, kq, kontrak]
-  reputations:
-    description: Check your or another player's reputation.
-    aliases: [rep, reputasi]
+  playercontract:
+    description: Main command for the Player Contract plugin.
+    aliases: [pc, kontrak]

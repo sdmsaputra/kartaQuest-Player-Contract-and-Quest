@@ -37,6 +37,8 @@ messages:
   # Claiming
   no-items-to-claim: "<gray>You have no completed contracts to claim items from."
   claimed-items: "<green>Claimed <aqua>{amount} {item}</aqua> from a completed contract."
+  inventory-full-claim: "<red>Your inventory is full. Cannot claim <aqua>{amount} {item}</aqua>."
+  reward-claimed: "<green>You have claimed your reward of <gold>${reward}</gold>!"
 
   # Reputation
   reputation-check-self: "<gray>Your current reputation is: <aqua>{reputation}</aqua>."
@@ -51,8 +53,26 @@ messages:
   gui-lore-accept: "<yellow>Klik untuk menerima kontrak!"
   gui-lore-time: "<gray>Sisa Waktu: <red>{time}"
 
+  inventory-gui-title: "<blue>Your Contracts"
+  inventory-gui-in-progress-item-name: "<gold>Tugas: Kumpulkan {amount} {item}"
+  inventory-gui-in-progress-item-lore:
+    - "<gray>Imbalan: <green>${reward}"
+    - "<gray>Dibuat oleh: <white>{creator}"
+    - ""
+    - "<gray>Diterima: <white>{time_accepted} lalu"
+    - "<gray>Status: <yellow>Sedang Dikerjakan"
+  inventory-gui-completed-item-name: "<green>Tugas: Kumpulkan {amount} {item}"
+  inventory-gui-completed-item-lore:
+    - "<gray>Imbalan: <green>${reward}"
+    - "<gray>Dibuat oleh: <white>{creator}"
+    - ""
+    - "<gray>Diselesaikan: <white>{time_completed} lalu"
+    - "<gray>Status: <green>Selesai"
+    - ""
+    - "<yellow>Klik untuk mengambil imbalan!"
+
   # Admin
-  config-reloaded: "<green>KartaQuest configuration has been reloaded."
+  config-reloaded: "<green>Player Contract configuration has been reloaded."
   contract-deleted: "<green>Contract <aqua>{id}</aqua> has been forcefully deleted."
   contract-not-found: "<red>Contract with ID <aqua>{id}</aqua> not found."
   admin-help: "<gray>Admin commands: reload, delete <id>"
