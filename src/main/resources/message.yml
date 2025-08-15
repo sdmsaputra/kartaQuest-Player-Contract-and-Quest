@@ -57,3 +57,36 @@ admin-delete-usage: "<yellow>Usage: /contract admin delete <contract_id></yellow
 config-reloaded: "<green>Configuration and messages reloaded successfully.</green>"
 contract-not-found: "<red>Contract with ID '<id>' not found.</red>"
 contract-deleted: "<green>Contract with ID '<id>' has been deleted.</green>"
+
+# GUI Messages
+gui-title: "Contract Board (<page>/<total_pages>)"
+gui-previous-page: "<green>Previous Page</green>"
+gui-next-page: "<green>Next Page</green>"
+
+# Contract Item in GUI
+gui-contract-title: "<gold>Contract: <amount> <item>"
+gui-lore-creator: "<gray>Creator: <white><player>"
+gui-lore-reward: "<gray>Reward: <gold><reward>"
+gui-lore-time: "<gray>Time Left: <red><time>"
+gui-lore-accept: "<newline><yellow>Click to accept this contract!"
+gui-lore-empty-line: ""
+
+# Player Inventory GUI
+player-inv-gui-title: "Your Created Contracts"
+player-inv-gui-lore-item: "<gray>Item: <white><amount>x <item>"
+player-inv-gui-lore-reward: "<gray>Reward: <gold><reward>"
+player-inv-gui-lore-accepted-by: "<gray>Accepted by: <white><player>"
+player-inv-gui-lore-accepted-at: "<gray>Accepted: <white><time> ago"
+player-inv-gui-lore-completed-by: "<gray>Completed by: <white><player>"
+player-inv-gui-lore-completed-at: "<gray>Completed: <white><time> ago"
+player-inv-gui-lore-claim-items: "<gold>You can claim the items with /pc claim."
+player-inv-gui-lore-unknown-player: "Unknown"
+
+# Player Inventory GUI - Contract Status
+player-inv-gui-status-available-title: "<green>Status: AVAILABLE"
+player-inv-gui-status-available-lore: "<gray>This contract is waiting for someone to accept it."
+player-inv-gui-status-in-progress-title: "<yellow>Status: IN PROGRESS"
+player-inv-gui-status-completed-title: "<aqua>Status: COMPLETED"
+player-inv-gui-status-expired-title: "<red>Status: EXPIRED"
+player-inv-gui-status-expired-lore: "<gray>This contract expired and was not completed."
+player-inv-gui-status-unknown-title: "<dark_gray>Status: UNKNOWN"
