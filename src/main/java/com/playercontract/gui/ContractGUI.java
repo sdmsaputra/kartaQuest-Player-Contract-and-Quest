@@ -53,7 +53,7 @@ public class ContractGUI {
         if (page > 0) {
             ItemStack previous = new ItemStack(Material.ARROW);
             ItemMeta prevMeta = previous.getItemMeta();
-            prevMeta.displayName(Component.text("Previous Page")); // This can be made configurable too
+            prevMeta.displayName(plugin.getConfigManager().getMessage("gui-previous-page", player, false));
             previous.setItemMeta(prevMeta);
             gui.setItem(45, previous); // Bottom-left
         }
@@ -61,7 +61,7 @@ public class ContractGUI {
         if (endIndex < availableContracts.size()) {
             ItemStack next = new ItemStack(Material.ARROW);
             ItemMeta nextMeta = next.getItemMeta();
-            nextMeta.displayName(Component.text("Next Page")); // This can be made configurable too
+            nextMeta.displayName(plugin.getConfigManager().getMessage("gui-next-page", player, false));
             next.setItemMeta(nextMeta);
             gui.setItem(53, next); // Bottom-right
         }

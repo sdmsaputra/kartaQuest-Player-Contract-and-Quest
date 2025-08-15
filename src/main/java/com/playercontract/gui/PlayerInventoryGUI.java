@@ -2,9 +2,9 @@ package com.playercontract.gui;
 
 import com.playercontract.PlayerContract;
 import com.playercontract.data.Contract;
+import com.playercontract.managers.ConfigManager;
 import com.playercontract.utils.TimeParser;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -21,16 +21,17 @@ public class PlayerInventoryGUI {
 
     private final PlayerContract plugin;
     private final Player player;
+    private final ConfigManager configManager;
 
     public PlayerInventoryGUI(PlayerContract plugin, Player player) {
         this.plugin = plugin;
         this.player = player;
+        this.configManager = plugin.getConfigManager();
     }
 
     public void open() {
         PlayerInventoryGUIHolder holder = new PlayerInventoryGUIHolder();
-        // Using a hardcoded title for now, can be moved to config later
-        Component title = Component.text("Your Created Contracts");
+        Component title = configManager.getMessage("player-inv-gui-title", player, false);
         Inventory gui = Bukkit.createInventory(holder, 54, title);
 
         List<Contract> createdContracts = plugin.getContractManager().getContractsByCreator(player.getUniqueId());
@@ -51,56 +52,64 @@ public class PlayerInventoryGUI {
         List<Component> lore = new ArrayList<>();
 
         // Common lore parts
-        lore.add(Component.text(""));
-        lore.add(Component.text("Item: ").color(NamedTextColor.GRAY)
-                .append(Component.text(contract.itemAmount() + "x " + contract.itemType().name()).color(NamedTextColor.WHITE)));
-        lore.add(Component.text("Reward: ").color(NamedTextColor.GRAY)
-                .append(Component.text(String.format("%,.2f", contract.reward())).color(NamedTextColor.GOLD)));
-
+        lore.add(configManager.getMessage("gui-lore-empty-line", player, false));
+        lore.add(configManager.getMessage("player-inv-gui-lore-item", player, false,
+                Placeholder.unparsed("amount", String.valueOf(contract.itemAmount())),
+                Placeholder.unparsed("item", contract.itemType().name())
+        ));
+        lore.add(configManager.getMessage("player-inv-gui-lore-reward", player, false,
+                Placeholder.unparsed("reward", String.format("%,.2f", contract.reward()))
+        ));
 
         switch (contract.status()) {
             case AVAILABLE:
                 item = new ItemStack(Material.BOOK);
                 meta = item.getItemMeta();
-                meta.displayName(Component.text("Status: AVAILABLE").color(NamedTextColor.GREEN));
-                lore.add(Component.text("This contract is waiting for someone to accept it.").color(NamedTextColor.GRAY));
+                meta.displayName(configManager.getMessage("player-inv-gui-status-available-title", player, false));
+                lore.add(configManager.getMessage("player-inv-gui-status-available-lore", player, false));
                 break;
 
             case IN_PROGRESS:
                 item = new ItemStack(Material.WRITABLE_BOOK);
                 meta = item.getItemMeta();
-                meta.displayName(Component.text("Status: IN PROGRESS").color(NamedTextColor.YELLOW));
+                meta.displayName(configManager.getMessage("player-inv-gui-status-in-progress-title", player, false));
                 OfflinePlayer assignee = Bukkit.getOfflinePlayer(contract.assigneeUuid());
-                lore.add(Component.text("Accepted by: ").color(NamedTextColor.GRAY)
-                        .append(Component.text(assignee.getName() != null ? assignee.getName() : "Unknown").color(NamedTextColor.WHITE)));
-                lore.add(Component.text("Accepted: ").color(NamedTextColor.GRAY)
-                        .append(Component.text(TimeParser.formatTimeElapsed(contract.acceptedTimestamp()) + " ago").color(NamedTextColor.WHITE)));
+                String assigneeName = assignee.getName() != null ? assignee.getName() : configManager.getRawMessage("player-inv-gui-lore-unknown-player");
+                lore.add(configManager.getMessage("player-inv-gui-lore-accepted-by", player, false,
+                        Placeholder.unparsed("player", assigneeName)
+                ));
+                lore.add(configManager.getMessage("player-inv-gui-lore-accepted-at", player, false,
+                        Placeholder.unparsed("time", TimeParser.formatTimeElapsed(contract.acceptedTimestamp()))
+                ));
                 break;
 
             case COMPLETED_UNCLAIMED:
                 item = new ItemStack(Material.ENCHANTED_BOOK);
                 meta = item.getItemMeta();
-                meta.displayName(Component.text("Status: COMPLETED").color(NamedTextColor.AQUA));
+                meta.displayName(configManager.getMessage("player-inv-gui-status-completed-title", player, false));
                 OfflinePlayer completer = Bukkit.getOfflinePlayer(contract.assigneeUuid());
-                lore.add(Component.text("Completed by: ").color(NamedTextColor.GRAY)
-                        .append(Component.text(completer.getName() != null ? completer.getName() : "Unknown").color(NamedTextColor.WHITE)));
-                lore.add(Component.text("Completed: ").color(NamedTextColor.GRAY)
-                        .append(Component.text(TimeParser.formatTimeElapsed(contract.completedTimestamp()) + " ago").color(NamedTextColor.WHITE)));
-                lore.add(Component.text(""));
-                lore.add(Component.text("You can claim the items with /pc claim.").color(NamedTextColor.GOLD));
+                String completerName = completer.getName() != null ? completer.getName() : configManager.getRawMessage("player-inv-gui-lore-unknown-player");
+                lore.add(configManager.getMessage("player-inv-gui-lore-completed-by", player, false,
+                        Placeholder.unparsed("player", completerName)
+                ));
+                lore.add(configManager.getMessage("player-inv-gui-lore-completed-at", player, false,
+                        Placeholder.unparsed("time", TimeParser.formatTimeElapsed(contract.completedTimestamp()))
+                ));
+                lore.add(configManager.getMessage("gui-lore-empty-line", player, false));
+                lore.add(configManager.getMessage("player-inv-gui-lore-claim-items", player, false));
                 break;
 
             case EXPIRED:
                 item = new ItemStack(Material.BARRIER);
                 meta = item.getItemMeta();
-                meta.displayName(Component.text("Status: EXPIRED").color(NamedTextColor.RED));
-                lore.add(Component.text("This contract expired and was not completed.").color(NamedTextColor.GRAY));
+                meta.displayName(configManager.getMessage("player-inv-gui-status-expired-title", player, false));
+                lore.add(configManager.getMessage("player-inv-gui-status-expired-lore", player, false));
                 break;
 
             default:
                 item = new ItemStack(Material.STONE);
                 meta = item.getItemMeta();
-                meta.displayName(Component.text("Status: UNKNOWN").color(NamedTextColor.DARK_GRAY));
+                meta.displayName(configManager.getMessage("player-inv-gui-status-unknown-title", player, false));
                 break;
         }
 

@@ -1,59 +1,96 @@
 # ----------------------------------------------------------------------------------------------------
-# File Pesan untuk KartaPlayerContract
+# Message file for KartaPlayerContract
 #
-# Semua pesan mendukung format MiniMessage.
-# Pelajari lebih lanjut di: https://docs.advntr.dev/minimessage/format.html
+# All messages support MiniMessage format.
+# Learn more at: https://docs.advntr.dev/minimessage/format.html
 #
-# Placeholder:
-# <player> - Nama pemain
-# <amount> - Jumlah
-# <item>   - Nama item
-# <price>  - Harga
-# <tax>    - Pajak
-# <reward> - Hadiah
-# <creator>- Pembuat kontrak
-# <id>     - ID Kontrak
-# <max>    - Jumlah maksimum
-# <reputation> - Reputasi
+# Placeholders:
+# <player> - Player's name
+# <amount> - Amount
+# <item>   - Item name
+# <price>  - Price
+# <tax>    - Tax
+# <reward> - Reward
+# <creator>- Contract creator
+# <id>     - Contract ID
+# <max>    - Maximum amount
+# <reputation> - Reputation
 # ----------------------------------------------------------------------------------------------------
+version: "2.1.1-BETA"
+prefix: "<gray>[<gold>Contract<gray>] "
 
-prefix: "<gray>[<gold>Kontrak<gray>] "
+# General Messages & Errors
+player-only-command: "<red>This command is for players only."
+unknown-command: "<red>Unknown command. Try /contract.</red>"
+player-not-found: "<red>Player not found.</red>"
+no-permission: "<red>You don't have permission to do this.</red>"
+transaction-error: "<red>An unexpected error occurred during the transaction.</red>"
+invalid-item: "<red>Invalid item '<item>'.</red>"
+invalid-amount: "<red>Invalid amount entered.</red>"
+invalid-price: "<red>Invalid price entered.</red>"
+invalid-time-format: "<red>Invalid time format. Use d (day), h (hour), m (minute), s (second). Example: 7d, 12h, 30m.</red>"
+insufficient-funds: "<red>Insufficient funds. You need <price> + <tax> (tax).</red>"
 
-# Pesan Umum & Error
-player-only-command: "<red>Perintah ini hanya untuk pemain."
-unknown-command: "<red>Perintah tidak dikenal. Coba /contract.</red>"
-player-not-found: "<red>Pemain tidak ditemukan.</red>"
-no-permission: "<red>Anda tidak memiliki izin untuk melakukan ini.</red>"
-transaction-error: "<red>Terjadi kesalahan tak terduga selama transaksi.</red>"
-invalid-item: "<red>Item '<item>' tidak valid.</red>"
-invalid-amount: "<red>Jumlah yang dimasukkan tidak valid.</red>"
-invalid-price: "<red>Harga yang dimasukkan tidak valid.</red>"
-invalid-time-format: "<red>Format waktu tidak valid. Gunakan d (hari), h (jam), m (menit), s (detik). Contoh: 7d, 12j, 30m.</red>"
-insufficient-funds: "<red>Dana tidak cukup. Anda memerlukan <price> + <tax> (pajak).</red>"
+# Main Commands
+creation-usage: "<yellow>Usage: /contract create <item> <amount> <price> [time_limit]</yellow>"
+max-contracts-reached: "<red>You have reached the maximum limit of <max> active contracts.</red>"
+contract-created: "<green>Contract successfully created: <amount> <item> for <price>.</green>"
+no-active-contract: "<yellow>You do not have an active contract.</yellow>"
+contract-status: "<gray>Contract Status: <yellow>Bring <amount> <item> for <reward> from <creator>.</yellow>"
+not-enough-items: "<red>You don't have enough <item> (<amount>) to complete the contract.</red>"
+contract-completed: "<green>Contract completed! You received <reward> and reputation.</green>"
+contract-cancelled: "<yellow>The contract has been cancelled. Your reputation has decreased.</yellow>"
 
-# Perintah Utama
-creation-usage: "<yellow>Penggunaan: /contract create <item> <jumlah> <harga> [batas_waktu]</yellow>"
-max-contracts-reached: "<red>Anda telah mencapai batas maksimum <max> kontrak aktif.</red>"
-contract-created: "<green>Kontrak berhasil dibuat: <amount> <item> seharga <price>.</green>"
-no-active-contract: "<yellow>Anda tidak memiliki kontrak yang sedang aktif.</yellow>"
-contract-status: "<gray>Status Kontrak: <yellow>Bawa <amount> <item> untuk <reward> dari <creator>.</yellow>"
-not-enough-items: "<red>Anda tidak memiliki cukup <item> (<amount> buah) untuk menyelesaikan kontrak.</red>"
-contract-completed: "<green>Kontrak selesai! Anda menerima <reward> dan reputasi.</green>"
-contract-cancelled: "<yellow>Kontrak telah dibatalkan. Reputasi Anda berkurang.</yellow>"
+# Item Claim
+no-items-to-claim: "<yellow>No items to claim.</yellow>"
+claimed-items: "<green>You claimed <amount> <item>.</green>"
+inventory-full-claim: "<red>Inventory is full! Cannot claim <amount> <item>.</red>"
 
-# Klaim Item
-no-items-to-claim: "<yellow>Tidak ada item yang bisa diklaim.</yellow>"
-claimed-items: "<green>Anda mengklaim <amount> <item>.</green>"
-inventory-full-claim: "<red>Inventaris penuh! Tidak dapat mengklaim <amount> <item>.</red>"
+# Reputation
+reputation-usage: "<yellow>Usage: /contract reputation [player]</yellow>"
+reputation-check-self: "<gray>Your current reputation: <gold><reputation></gold></gray>"
+reputation-check-other: "<gray><player>'s reputation: <gold><reputation></gold></gray>"
 
-# Reputasi
-reputation-usage: "<yellow>Penggunaan: /contract reputation [pemain]</yellow>"
-reputation-check-self: "<gray>Reputasi Anda saat ini: <gold><reputation></gold></gray>"
-reputation-check-other: "<gray>Reputasi <player>: <gold><reputation></gold></gray>"
+# Admin Commands
+admin-help: "<yellow>Admin Commands: /contract admin <reload|delete> [args]</yellow>"
+admin-delete-usage: "<yellow>Usage: /contract admin delete <contract_id></yellow>"
+config-reloaded: "<green>Configuration and messages reloaded successfully.</green>"
+contract-not-found: "<red>Contract with ID '<id>' not found.</red>"
+contract-deleted: "<green>Contract with ID '<id>' has been deleted.</green>"
 
-# Perintah Admin
-admin-help: "<yellow>Perintah Admin: /contract admin <reload|delete> [args]</yellow>"
-admin-delete-usage: "<yellow>Penggunaan: /contract admin delete <id_kontrak></yellow>"
-config-reloaded: "<green>Konfigurasi dan pesan berhasil dimuat ulang.</green>"
-contract-not-found: "<red>Kontrak dengan ID '<id>' tidak ditemukan.</red>"
-contract-deleted: "<green>Kontrak dengan ID '<id>' telah dihapus.</green>"
+# GUI Messages
+gui-title: "Contract Board (<page>/<total_pages>)"
+gui-previous-page: "<green>Previous Page</green>"
+gui-next-page: "<green>Next Page</green>"
+
+# Contract Item in GUI
+gui-contract-title: "<gold>Contract: <amount> <item>"
+gui-lore-creator: "<gray>Creator: <white><player>"
+gui-lore-reward: "<gray>Reward: <gold><reward>"
+gui-lore-time: "<gray>Time Left: <red><time>"
+gui-lore-accept: "<newline><yellow>Click to accept this contract!"
+cannot-accept-own: "<red>You cannot accept your own contract.</red>"
+already-has-contract: "<red>You already have an active contract.</red>"
+contract-accepted: "<green>You have accepted a contract to deliver <amount> <item>.</green>"
+reward-claimed: "<green>You have claimed your reward of <reward>!</green>"
+gui-lore-empty-line: ""
+
+# Player Inventory GUI
+player-inv-gui-title: "Your Created Contracts"
+player-inv-gui-lore-item: "<gray>Item: <white><amount>x <item>"
+player-inv-gui-lore-reward: "<gray>Reward: <gold><reward>"
+player-inv-gui-lore-accepted-by: "<gray>Accepted by: <white><player>"
+player-inv-gui-lore-accepted-at: "<gray>Accepted: <white><time> ago"
+player-inv-gui-lore-completed-by: "<gray>Completed by: <white><player>"
+player-inv-gui-lore-completed-at: "<gray>Completed: <white><time> ago"
+player-inv-gui-lore-claim-items: "<gold>You can claim the items with /pc claim."
+player-inv-gui-lore-unknown-player: "Unknown"
+
+# Player Inventory GUI - Contract Status
+player-inv-gui-status-available-title: "<green>Status: AVAILABLE"
+player-inv-gui-status-available-lore: "<gray>This contract is waiting for someone to accept it."
+player-inv-gui-status-in-progress-title: "<yellow>Status: IN PROGRESS"
+player-inv-gui-status-completed-title: "<aqua>Status: COMPLETED"
+player-inv-gui-status-expired-title: "<red>Status: EXPIRED"
+player-inv-gui-status-expired-lore: "<gray>This contract expired and was not completed."
+player-inv-gui-status-unknown-title: "<dark_gray>Status: UNKNOWN"

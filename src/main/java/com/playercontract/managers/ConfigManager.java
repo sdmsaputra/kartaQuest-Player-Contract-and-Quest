@@ -122,4 +122,8 @@ public class ConfigManager {
     public String getAdminPermission() {
         return adminPermission;
     }
+
+    public String getRawMessage(String key) {
+        return messagesConfig.getString(key, "Unknown");
+    }
 }
