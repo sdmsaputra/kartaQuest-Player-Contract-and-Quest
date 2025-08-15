@@ -66,11 +66,11 @@ public class PlayerContractCommand implements CommandExecutor, TabCompleter {
                 handleClaimCommand(player);
                 break;
             case "admin":
-                handleAdminCommand(player, args);
+                handleAdminCommand(player, args, label);
                 break;
             case "rep":
             case "reputation":
-                handleReputationCommand(sender, args);
+                handleReputationCommand(sender, args, label);
                 break;
             default:
                 player.sendMessage(plugin.getConfigManager().getMessage("unknown-command", player));
@@ -285,7 +285,7 @@ public class PlayerContractCommand implements CommandExecutor, TabCompleter {
         return amountNeeded <= 0;
     }
 
-    private void handleAdminCommand(Player player, String[] args) {
+    private void handleAdminCommand(Player player, String[] args, String label) {
         if (!player.hasPermission("kartaquest.admin")) {
             player.sendMessage(plugin.getConfigManager().getMessage("unknown-command", player)); // Hide admin command
             return;
@@ -304,7 +304,7 @@ public class PlayerContractCommand implements CommandExecutor, TabCompleter {
                 break;
             case "delete":
                 if (args.length < 3) {
-                    player.sendMessage("Usage: /kq admin delete <contract-id>");
+                        player.sendMessage("Usage: /" + label + " admin delete <contract-id>");
                     return;
                 }
                 try {
@@ -325,7 +325,7 @@ public class PlayerContractCommand implements CommandExecutor, TabCompleter {
         }
     }
 
-    private void handleReputationCommand(CommandSender sender, String[] args) {
+    private void handleReputationCommand(CommandSender sender, String[] args, String label) {
         if (args.length == 1) {
             if (!(sender instanceof Player player)) {
                 sender.sendMessage(plugin.getConfigManager().getMessage("player-only-command"));
@@ -354,6 +354,6 @@ public class PlayerContractCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        sender.sendMessage("Usage: /pc reputation [player]"); // This can be a configurable message too
+        sender.sendMessage("Usage: /" + label + " reputation [player]"); // This can be a configurable message too
     }
 }
