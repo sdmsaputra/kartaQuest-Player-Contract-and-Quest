@@ -6,3 +6,32 @@
 # General settings
 max-contracts-per-player: 5
 contract-creation-tax-percent: 5.0
+admin-permission: "karta.admin"
+
+# Message settings
+messages:
+  prefix: "<gold>[KartaContract] </gold>"
+  player-only-command: "<red>This command can only be run by a player.</red>"
+  unknown-command: "<red>Unknown command. Type /contract help for help.</red>"
+  creation-usage: "<red>Usage: /contract create <item> <amount> <price> [time_limit]</red>"
+  max-contracts-reached: "<red>You have reached the maximum number of active contracts ({max}).</red>"
+  invalid-item: "<red>Invalid item type: {item}.</red>"
+  invalid-amount: "<red>Invalid amount. Please enter a positive number.</red>"
+  invalid-price: "<red>Invalid price. Please enter a positive number.</red>"
+  insufficient-funds: "<red>You do not have enough money. You need {price} + {tax} (tax).</red>"
+  contract-created: "<green>You have successfully created a contract to buy {amount} of {item} for {price}.</green>"
+  no-active-contract: "<red>You do not have an active contract.</red>"
+  contract-status: "<gray>Your current contract: buy {amount} {item} for {reward} from {creator}.</gray>"
+  not-enough-items: "<red>You do not have enough {item} in your inventory. You need {amount}.</red>"
+  contract-completed: "<green>Contract completed! You have received {reward}.</green>"
+  contract-cancelled: "<red>You have cancelled your contract. Your reputation has decreased.</red>"
+  no-items-to-claim: "<red>You have no items to claim.</red>"
+  claimed-items: "<green>You have claimed {amount} {item}.</green>"
+  inventory-full-claim: "<red>Your inventory is full. Could not claim {amount} {item}.</red>"
+  admin-help: "<gold>Admin Commands:</gold>\n/contract admin reload - Reloads the config.\n/contract admin delete <id> - Deletes a contract."
+  config-reloaded: "<green>Configuration reloaded successfully.</green>"
+  contract-not-found: "<red>Contract with ID {id} not found.</red>"
+  contract-deleted: "<green>Successfully deleted contract {id}.</green>"
+  reputation-check-self: "<gray>Your reputation is {reputation}.</gray>"
+  player-not-found: "<red>Player not found.</red>"
+  reputation-check-other: "<gray>{player}'s reputation is {reputation}.</gray>"

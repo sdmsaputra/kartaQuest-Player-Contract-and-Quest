@@ -19,6 +19,7 @@ public class ConfigManager {
     private final MiniMessage miniMessage;
     private final boolean isPapiEnabled;
     private static final Pattern LEGACY_PLACEHOLDER_PATTERN = Pattern.compile("[{$]([^{}$]+)}");
+    private String adminPermission;
 
 
     public ConfigManager(PlayerContract plugin) {
@@ -33,6 +34,8 @@ public class ConfigManager {
         config = plugin.getConfig();
         config.options().copyDefaults(true);
         plugin.saveConfig();
+
+        adminPermission = config.getString("admin-permission", "karta.admin");
     }
 
     public void reloadConfig() {
@@ -88,5 +91,9 @@ public class ConfigManager {
     public Component parse(String message, OfflinePlayer player, TagResolver... placeholders) {
         String formattedMessage = formatString(player, message);
         return miniMessage.deserialize(formattedMessage, placeholders);
+    }
+
+    public String getAdminPermission() {
+        return adminPermission;
     }
 }
