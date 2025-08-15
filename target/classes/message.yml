@@ -16,7 +16,7 @@
 # <max>    - Maximum amount
 # <reputation> - Reputation
 # ----------------------------------------------------------------------------------------------------
-version: "2.1.1-BETA"
+version: "2.1.3-BETA"
 prefix: "<gray>[<gold>Contract<gray>] "
 
 # General Messages & Errors
@@ -30,6 +30,8 @@ invalid-amount: "<red>Invalid amount entered.</red>"
 invalid-price: "<red>Invalid price entered.</red>"
 invalid-time-format: "<red>Invalid time format. Use d (day), h (hour), m (minute), s (second). Example: 7d, 12h, 30m.</red>"
 insufficient-funds: "<red>Insufficient funds. You need <price> + <tax> (tax).</red>"
+cannot-accept-own: "<red>You cannot accept your own contract.</red>"
+already-has-contract: "<red>You already have an active contract.</red>"
 
 # Main Commands
 creation-usage: "<yellow>Usage: /contract create <item> <amount> <price> [time_limit]</yellow>"
@@ -38,12 +40,14 @@ contract-created: "<green>Contract successfully created: <amount> <item> for <pr
 no-active-contract: "<yellow>You do not have an active contract.</yellow>"
 contract-status: "<gray>Contract Status: <yellow>Bring <amount> <item> for <reward> from <creator>.</yellow>"
 not-enough-items: "<red>You don't have enough <item> (<amount>) to complete the contract.</red>"
+contract-accepted: "<green>You have accepted the contract!</green>"
 contract-completed: "<green>Contract completed! You received <reward> and reputation.</green>"
 contract-cancelled: "<yellow>The contract has been cancelled. Your reputation has decreased.</yellow>"
 
 # Item Claim
 no-items-to-claim: "<yellow>No items to claim.</yellow>"
 claimed-items: "<green>You claimed <amount> <item>.</green>"
+reward-claimed: "<green>You have claimed your reward!</green>"
 inventory-full-claim: "<red>Inventory is full! Cannot claim <amount> <item>.</red>"
 
 # Reputation
@@ -68,7 +72,7 @@ gui-contract-title: "<gold>Contract: <amount> <item>"
 gui-lore-creator: "<gray>Creator: <white><player>"
 gui-lore-reward: "<gray>Reward: <gold><reward>"
 gui-lore-time: "<gray>Time Left: <red><time>"
-gui-lore-accept: "<newline><yellow>Click to accept this contract!"
+gui-lore-accept: "<yellow>Click to accept this contract!"
 gui-lore-empty-line: ""
 
 # Player Inventory GUI
@@ -80,7 +84,7 @@ player-inv-gui-lore-accepted-at: "<gray>Accepted: <white><time> ago"
 player-inv-gui-lore-completed-by: "<gray>Completed by: <white><player>"
 player-inv-gui-lore-completed-at: "<gray>Completed: <white><time> ago"
 player-inv-gui-lore-claim-items: "<gold>You can claim the items with /pc claim."
-player-inv-gui-lore-unknown-player: "Unknown"
+player-inv-gui-lore-unknown-player: "<gray>Unknown"
 
 # Player Inventory GUI - Contract Status
 player-inv-gui-status-available-title: "<green>Status: AVAILABLE"

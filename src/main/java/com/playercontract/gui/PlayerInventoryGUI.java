@@ -52,7 +52,7 @@ public class PlayerInventoryGUI {
         List<Component> lore = new ArrayList<>();
 
         // Common lore parts
-        lore.add(configManager.getMessage("gui-lore-empty-line", player, false));
+        lore.add(Component.empty());
         lore.add(configManager.getMessage("player-inv-gui-lore-item", player, false,
                 Placeholder.unparsed("amount", String.valueOf(contract.itemAmount())),
                 Placeholder.unparsed("item", contract.itemType().name())
@@ -95,7 +95,7 @@ public class PlayerInventoryGUI {
                 lore.add(configManager.getMessage("player-inv-gui-lore-completed-at", player, false,
                         Placeholder.unparsed("time", TimeParser.formatTimeElapsed(contract.completedTimestamp()))
                 ));
-                lore.add(configManager.getMessage("gui-lore-empty-line", player, false));
+                lore.add(Component.empty());
                 lore.add(configManager.getMessage("player-inv-gui-lore-claim-items", player, false));
                 break;
 
