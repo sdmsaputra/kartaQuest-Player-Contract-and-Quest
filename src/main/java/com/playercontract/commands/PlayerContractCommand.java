@@ -77,7 +77,7 @@ public class PlayerContractCommand implements CommandExecutor, TabCompleter {
                     sender.sendMessage(plugin.getConfigManager().getMessage("unknown-command", (Player) sender));
                     return true;
                 }
-                plugin.getConfigManager().reloadConfig();
+                plugin.getConfigManager().reload();
                 sender.sendMessage(plugin.getConfigManager().getMessage("config-reloaded", (Player) sender));
                 break;
             default:
@@ -164,7 +164,7 @@ public class PlayerContractCommand implements CommandExecutor, TabCompleter {
             timeLimit = TimeParser.parseTime(args[4]);
             if (timeLimit == 0) {
                 // TimeParser returns 0 if format is invalid
-                player.sendMessage("Invalid time format. Use d, h, m, s. Example: 7d, 12h, 30m");
+                player.sendMessage(plugin.getConfigManager().getMessage("invalid-time-format", player));
                 return;
             }
         }
@@ -182,7 +182,7 @@ public class PlayerContractCommand implements CommandExecutor, TabCompleter {
 
         EconomyResponse response = plugin.getEconomyManager().withdrawPlayer(player, totalCost);
         if (!response.transactionSuccess()) {
-            player.sendMessage("An unexpected error occurred during the transaction.");
+            player.sendMessage(plugin.getConfigManager().getMessage("transaction-error", player));
             return;
         }
 
@@ -310,12 +310,12 @@ public class PlayerContractCommand implements CommandExecutor, TabCompleter {
         String adminSubCommand = args[1].toLowerCase();
         switch (adminSubCommand) {
             case "reload":
-                plugin.getConfigManager().reloadConfig();
+                plugin.getConfigManager().reload();
                 player.sendMessage(plugin.getConfigManager().getMessage("config-reloaded", player));
                 break;
             case "delete":
                 if (args.length < 3) {
-                        player.sendMessage("Usage: /" + label + " admin delete <contract-id>");
+                    player.sendMessage(plugin.getConfigManager().getMessage("admin-delete-usage", player));
                     return;
                 }
                 try {
@@ -365,6 +365,6 @@ public class PlayerContractCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        sender.sendMessage("Usage: /" + label + " reputation [player]"); // This can be a configurable message too
+        sender.sendMessage(plugin.getConfigManager().getMessage("reputation-usage", (sender instanceof Player p) ? p : null));
     }
 }

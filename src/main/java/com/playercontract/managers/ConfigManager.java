@@ -8,7 +8,12 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,6 +21,7 @@ public class ConfigManager {
 
     private final PlayerContract plugin;
     private FileConfiguration config;
+    private FileConfiguration messagesConfig;
     private final MiniMessage miniMessage;
     private final boolean isPapiEnabled;
     private static final Pattern LEGACY_PLACEHOLDER_PATTERN = Pattern.compile("[{$]([^{}$]+)}");
@@ -27,6 +33,7 @@ public class ConfigManager {
         this.miniMessage = MiniMessage.miniMessage();
         this.isPapiEnabled = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
         loadConfig();
+        loadMessages();
     }
 
     private void loadConfig() {
@@ -38,9 +45,28 @@ public class ConfigManager {
         adminPermission = config.getString("admin-permission", "karta.admin");
     }
 
-    public void reloadConfig() {
+    public void loadMessages() {
+        File messagesFile = new File(plugin.getDataFolder(), "message.yml");
+        if (!messagesFile.exists()) {
+            plugin.saveResource("message.yml", false);
+        }
+        messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
+
+        // Load default messages from the JAR
+        try (InputStream defaultConfigStream = plugin.getResource("message.yml")) {
+            if (defaultConfigStream != null) {
+                messagesConfig.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defaultConfigStream)));
+            }
+        } catch (IOException e) {
+            plugin.getLogger().severe("Could not load default messages from JAR.");
+            e.printStackTrace();
+        }
+    }
+
+    public void reload() {
         plugin.reloadConfig();
         config = plugin.getConfig();
+        loadMessages();
     }
 
     private String formatString(OfflinePlayer player, String message) {
@@ -72,8 +98,8 @@ public class ConfigManager {
     }
 
     public Component getMessage(String key, OfflinePlayer player, boolean withPrefix, TagResolver... placeholders) {
-        String messageFormat = config.getString("messages." + key, "<red>Missing message for key: " + key + "</red>");
-        String prefix = withPrefix ? config.getString("messages.prefix", "") : "";
+        String messageFormat = messagesConfig.getString(key, "<red>Missing message for key: " + key + "</red>");
+        String prefix = withPrefix ? messagesConfig.getString("prefix", "") : "";
 
         String formattedMessage = formatString(player, prefix + messageFormat);
 

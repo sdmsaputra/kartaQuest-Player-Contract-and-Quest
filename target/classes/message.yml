@@ -1,0 +1,59 @@
+# ----------------------------------------------------------------------------------------------------
+# File Pesan untuk KartaPlayerContract
+#
+# Semua pesan mendukung format MiniMessage.
+# Pelajari lebih lanjut di: https://docs.advntr.dev/minimessage/format.html
+#
+# Placeholder:
+# <player> - Nama pemain
+# <amount> - Jumlah
+# <item>   - Nama item
+# <price>  - Harga
+# <tax>    - Pajak
+# <reward> - Hadiah
+# <creator>- Pembuat kontrak
+# <id>     - ID Kontrak
+# <max>    - Jumlah maksimum
+# <reputation> - Reputasi
+# ----------------------------------------------------------------------------------------------------
+
+prefix: "<gray>[<gold>Kontrak<gray>] "
+
+# Pesan Umum & Error
+player-only-command: "<red>Perintah ini hanya untuk pemain."
+unknown-command: "<red>Perintah tidak dikenal. Coba /contract.</red>"
+player-not-found: "<red>Pemain tidak ditemukan.</red>"
+no-permission: "<red>Anda tidak memiliki izin untuk melakukan ini.</red>"
+transaction-error: "<red>Terjadi kesalahan tak terduga selama transaksi.</red>"
+invalid-item: "<red>Item '<item>' tidak valid.</red>"
+invalid-amount: "<red>Jumlah yang dimasukkan tidak valid.</red>"
+invalid-price: "<red>Harga yang dimasukkan tidak valid.</red>"
+invalid-time-format: "<red>Format waktu tidak valid. Gunakan d (hari), h (jam), m (menit), s (detik). Contoh: 7d, 12j, 30m.</red>"
+insufficient-funds: "<red>Dana tidak cukup. Anda memerlukan <price> + <tax> (pajak).</red>"
+
+# Perintah Utama
+creation-usage: "<yellow>Penggunaan: /contract create <item> <jumlah> <harga> [batas_waktu]</yellow>"
+max-contracts-reached: "<red>Anda telah mencapai batas maksimum <max> kontrak aktif.</red>"
+contract-created: "<green>Kontrak berhasil dibuat: <amount> <item> seharga <price>.</green>"
+no-active-contract: "<yellow>Anda tidak memiliki kontrak yang sedang aktif.</yellow>"
+contract-status: "<gray>Status Kontrak: <yellow>Bawa <amount> <item> untuk <reward> dari <creator>.</yellow>"
+not-enough-items: "<red>Anda tidak memiliki cukup <item> (<amount> buah) untuk menyelesaikan kontrak.</red>"
+contract-completed: "<green>Kontrak selesai! Anda menerima <reward> dan reputasi.</green>"
+contract-cancelled: "<yellow>Kontrak telah dibatalkan. Reputasi Anda berkurang.</yellow>"
+
+# Klaim Item
+no-items-to-claim: "<yellow>Tidak ada item yang bisa diklaim.</yellow>"
+claimed-items: "<green>Anda mengklaim <amount> <item>.</green>"
+inventory-full-claim: "<red>Inventaris penuh! Tidak dapat mengklaim <amount> <item>.</red>"
+
+# Reputasi
+reputation-usage: "<yellow>Penggunaan: /contract reputation [pemain]</yellow>"
+reputation-check-self: "<gray>Reputasi Anda saat ini: <gold><reputation></gold></gray>"
+reputation-check-other: "<gray>Reputasi <player>: <gold><reputation></gold></gray>"
+
+# Perintah Admin
+admin-help: "<yellow>Perintah Admin: /contract admin <reload|delete> [args]</yellow>"
+admin-delete-usage: "<yellow>Penggunaan: /contract admin delete <id_kontrak></yellow>"
+config-reloaded: "<green>Konfigurasi dan pesan berhasil dimuat ulang.</green>"
+contract-not-found: "<red>Kontrak dengan ID '<id>' tidak ditemukan.</red>"
+contract-deleted: "<green>Kontrak dengan ID '<id>' telah dihapus.</green>"
