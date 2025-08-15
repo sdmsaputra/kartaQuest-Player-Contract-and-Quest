@@ -1,4 +1,4 @@
-name: Player Contract
+name: PlayerContract
 version: '2.0.0-BETA'
 main: com.playercontract.PlayerContract
 api-version: '1.21'
