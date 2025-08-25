@@ -35,6 +35,8 @@ already-has-contract: "<red>You already have an active contract.</red>"
 
 # Main Commands
 creation-usage: "<yellow>Usage: /contract create <item> <amount> <price> [time_limit]</yellow>"
+creation-usage-price: "<gray><price>: The total amount you will pay the player who completes the contract."
+creation-usage-duration: "<gray>[time_limit]: Optional duration for the contract (e.g., 7d, 12h, 30m)."
 max-contracts-reached: "<red>You have reached the maximum limit of <max> active contracts.</red>"
 contract-created: "<green>Contract successfully created: <amount> <item> for <price>.</green>"
 no-active-contract: "<yellow>You do not have an active contract.</yellow>"
