@@ -91,46 +91,77 @@ public class PlayerContractCommand implements CommandExecutor, TabCompleter {
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        final List<String> completions = new ArrayList<>();
+        String currentArg = args[args.length - 1].toLowerCase();
+
         if (args.length == 1) {
             List<String> subCommands = new ArrayList<>(List.of("create", "status", "complete", "cancel", "claim", "inv", "inventory", "rep", "reputation"));
-            List<String> completions = new ArrayList<>();
+            if (sender.hasPermission(plugin.getConfigManager().getAdminPermission())) {
+                subCommands.add("admin");
+                subCommands.add("reload");
+            }
             for (String s : subCommands) {
-                if (s.startsWith(args[0].toLowerCase())) {
+                if (s.startsWith(currentArg)) {
                     completions.add(s);
                 }
             }
+        } else if (args.length == 2) {
+            String subCommand = args[0].toLowerCase();
+            switch (subCommand) {
+                case "create":
+                    String materialArg = args[1].toUpperCase();
+                    for (Material m : Material.values()) {
+                        if (m.isItem() && !m.isLegacy() && m.name().startsWith(materialArg)) {
+                            completions.add(m.name());
+                        }
+                    }
+                    break;
+                case "rep":
+                case "reputation":
+                    String playerArg = args[1].toLowerCase();
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        if (p.getName().toLowerCase().startsWith(playerArg)) {
+                            completions.add(p.getName());
+                        }
+                    }
+                    break;
+                case "admin":
+                    if (sender.hasPermission(plugin.getConfigManager().getAdminPermission())) {
+                        List<String> adminSubCommands = new ArrayList<>(List.of("reload", "delete"));
+                        for (String s : adminSubCommands) {
+                            if (s.startsWith(currentArg)) {
+                                completions.add(s);
+                            }
+                        }
+                    }
+                    break;
+            }
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("admin") && args[1].equalsIgnoreCase("delete")) {
             if (sender.hasPermission(plugin.getConfigManager().getAdminPermission())) {
-                if ("admin".startsWith(args[0].toLowerCase())) {
-                    completions.add("admin");
-                }
-                if ("reload".startsWith(args[0].toLowerCase())) {
-                    completions.add("reload");
-                }
+                String contractArg = args[2];
+                plugin.getContractManager().getActiveContracts().keySet().forEach(uuid -> {
+                    if (uuid.toString().startsWith(contractArg)) {
+                        completions.add(uuid.toString());
+                    }
+                });
             }
-            return completions;
-        } else if (args.length == 2 && args[0].equalsIgnoreCase("create")) {
-            String currentArg = args[1].toUpperCase();
-            List<String> materials = new ArrayList<>();
-            for (Material m : Material.values()) {
-                if (m.name().startsWith(currentArg)) {
-                    materials.add(m.name());
-                }
-            }
-            return materials;
         }
-        return new ArrayList<>();
+
+        return completions;
     }
 
     private void handleCreateCommand(Player player, String[] args) {
         if (args.length < 4 || args.length > 5) {
-            player.sendMessage(plugin.getConfigManager().getMessage("creation-usage", player)); // Should update usage message
+            player.sendMessage(plugin.getConfigManager().getMessage("creation-usage", player));
             return;
         }
 
-        // Max contract check
+        // Preliminary checks (can stay on main thread)
         int maxContracts = plugin.getConfigManager().getMaxContractsPerPlayer();
         long currentContracts = plugin.getContractManager().getActiveContracts().values().stream()
-                .filter(c -> c.creatorUuid().equals(player.getUniqueId())).count();
+                .filter(c -> c.creatorUuid().equals(player.getUniqueId()) && c.status() != Contract.ContractStatus.EXPIRED && c.status() != Contract.ContractStatus.COMPLETED_UNCLAIMED)
+                .count();
+
         if (currentContracts >= maxContracts) {
             player.sendMessage(plugin.getConfigManager().getMessage("max-contracts-reached", player, Placeholder.unparsed("max", String.valueOf(maxContracts))));
             return;
@@ -172,7 +203,6 @@ public class PlayerContractCommand implements CommandExecutor, TabCompleter {
         if (args.length == 5) {
             timeLimit = TimeParser.parseTime(args[4]);
             if (timeLimit == 0) {
-                // TimeParser returns 0 if format is invalid
                 player.sendMessage(plugin.getConfigManager().getMessage("invalid-time-format", player));
                 return;
             }
@@ -181,26 +211,41 @@ public class PlayerContractCommand implements CommandExecutor, TabCompleter {
         double tax = price * (plugin.getConfigManager().getContractCreationTaxPercent() / 100.0);
         double totalCost = price + tax;
 
-        if (!plugin.getEconomyManager().has(player, totalCost)) {
-            player.sendMessage(plugin.getConfigManager().getMessage("insufficient-funds", player,
-                    Placeholder.unparsed("price", String.format("%,.2f", price)),
-                    Placeholder.unparsed("tax", String.format("%,.2f", tax))
-            ));
-            return;
-        }
+        // Final values for lambda
+        long finalTimeLimit = timeLimit;
 
-        EconomyResponse response = plugin.getEconomyManager().withdrawPlayer(player, totalCost);
-        if (!response.transactionSuccess()) {
-            player.sendMessage(plugin.getConfigManager().getMessage("transaction-error", player));
-            return;
-        }
+        // Asynchronous economy operations
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            // This runs on a separate thread
+            boolean hasFunds = plugin.getEconomyManager().has(player, totalCost);
 
-        plugin.getContractManager().createContract(player.getUniqueId(), player.getName(), material, amount, price, timeLimit);
-        player.sendMessage(plugin.getConfigManager().getMessage("contract-created", player,
-                Placeholder.unparsed("amount", String.valueOf(amount)),
-                Placeholder.unparsed("item", material.name()),
-                Placeholder.unparsed("price", String.format("%,.2f", price))
-        ));
+            // Switch back to the main thread to perform actions
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                if (!hasFunds) {
+                    player.sendMessage(plugin.getConfigManager().getMessage("insufficient-funds", player,
+                            Placeholder.unparsed("price", String.format("%,.2f", price)),
+                            Placeholder.unparsed("tax", String.format("%,.2f", tax))
+                    ));
+                    return;
+                }
+
+                // Withdraw must also be on the main thread if it modifies player data
+                EconomyResponse response = plugin.getEconomyManager().withdrawPlayer(player, totalCost);
+                if (!response.transactionSuccess()) {
+                    player.sendMessage(plugin.getConfigManager().getMessage("transaction-error", player,
+                            Placeholder.unparsed("error", response.errorMessage)
+                    ));
+                    return;
+                }
+
+                plugin.getContractManager().createContract(player.getUniqueId(), player.getName(), material, amount, price, finalTimeLimit);
+                player.sendMessage(plugin.getConfigManager().getMessage("contract-created", player,
+                        Placeholder.unparsed("amount", String.valueOf(amount)),
+                        Placeholder.unparsed("item", material.name()),
+                        Placeholder.unparsed("price", String.format("%,.2f", price))
+                ));
+            });
+        });
     }
 
     // ... other handle methods
