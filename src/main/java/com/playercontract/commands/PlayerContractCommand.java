@@ -217,20 +217,22 @@ public class PlayerContractCommand implements CommandExecutor, TabCompleter {
         // Asynchronous economy operations
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             // This runs on a separate thread
-            boolean hasFunds = plugin.getEconomyManager().has(player, totalCost);
-
-            // Switch back to the main thread to perform actions
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                if (!hasFunds) {
+            if (!plugin.getEconomyManager().has(player, totalCost)) {
+                // Not enough funds, switch to main thread to send message
+                Bukkit.getScheduler().runTask(plugin, () -> {
                     player.sendMessage(plugin.getConfigManager().getMessage("insufficient-funds", player,
                             Placeholder.unparsed("price", String.format("%,.2f", price)),
                             Placeholder.unparsed("tax", String.format("%,.2f", tax))
                     ));
-                    return;
-                }
+                });
+                return;
+            }
 
-                // Withdraw must also be on the main thread if it modifies player data
-                EconomyResponse response = plugin.getEconomyManager().withdrawPlayer(player, totalCost);
+            // Perform withdrawal on this async thread. This will block the async thread, not the main thread.
+            EconomyResponse response = plugin.getEconomyManager().withdrawPlayer(player, totalCost);
+
+            // Switch back to the main thread to perform final actions
+            Bukkit.getScheduler().runTask(plugin, () -> {
                 if (!response.transactionSuccess()) {
                     player.sendMessage(plugin.getConfigManager().getMessage("transaction-error", player,
                             Placeholder.unparsed("error", response.errorMessage)
