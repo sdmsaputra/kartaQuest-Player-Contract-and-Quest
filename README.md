@@ -7,8 +7,10 @@ Karta PlayerContract is a Minecraft plugin that enhances player interaction by c
 - **Player-Driven Contracts:** Players can create contracts to request items from other players for a fee.
 - **Contract Board GUI:** A main GUI (`/contract`) shows all available contracts for players to accept.
 - **Personal Inventory GUI:** A new GUI (`/contract inv`) allows players to view their accepted and completed contracts, see who created them, and track how long they've been active.
+- **Cancel Your Own Contracts:** Easily cancel a contract you've created directly from the personal inventory GUI (if it hasn't been accepted yet).
 - **Click-to-Claim Rewards:** Once a contract is completed, the worker can simply click the item in their personal inventory GUI to receive their payment.
 - **Reputation System:** Gain reputation by completing contracts and lose it by canceling them. Check your own or others' reputation with `/contract reputation`.
+- **Visual Improvements:** The in-game GUI now has a cleaner look with non-italicized text and better-organized item details.
 - **Tab-Completion for Items:** When creating a contract, the item argument will now suggest available items.
 - **Vault Integration:** Uses Vault for all economic transactions.
 - **Time-Limited Contracts:** Optionally set a time limit for contracts.
@@ -24,7 +26,7 @@ Aliases: `/contract`
 | Subcommand | Description |
 | --- | --- |
 | (no subcommand) | Opens the main contract board GUI. |
-| `inv` or `inventory` | Opens your personal contract inventory to see your active and completed contracts. |
+| `inv` or `inventory` | Opens your personal contract inventory to see your active and completed contracts. You can also cancel contracts you have created from this menu. |
 | `create <item> <amount> <price> [time]` | Creates a new contract. Example: `/contract create DIAMOND 16 1000 7d` |
 | `status` | Checks the status of your currently accepted contract. |
 | `complete` | Turns in the required items to complete your contract. |

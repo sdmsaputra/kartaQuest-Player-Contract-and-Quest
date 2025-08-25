@@ -4,6 +4,7 @@ import com.playercontract.PlayerContract;
 import com.playercontract.data.Contract;
 import com.playercontract.gui.ContractGUI;
 import com.playercontract.gui.PlayerInventoryGUI;
+import com.playercontract.utils.StringUtils;
 import com.playercontract.utils.TimeParser;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -241,9 +242,10 @@ public class PlayerContractCommand implements CommandExecutor, TabCompleter {
                 }
 
                 plugin.getContractManager().createContract(player.getUniqueId(), player.getName(), material, amount, price, finalTimeLimit);
+                String formattedItemName = StringUtils.formatItemName(material);
                 player.sendMessage(plugin.getConfigManager().getMessage("contract-created", player,
                         Placeholder.unparsed("amount", String.valueOf(amount)),
-                        Placeholder.unparsed("item", material.name()),
+                        Placeholder.unparsed("item", formattedItemName),
                         Placeholder.unparsed("price", String.format("%,.2f", price))
                 ));
             });

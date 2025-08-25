@@ -54,8 +54,10 @@ public class PlayerInventoryGUI {
         // Common lore parts
         lore.add(Component.empty());
         lore.add(configManager.getMessage("player-inv-gui-lore-item", player, false,
-                Placeholder.unparsed("amount", String.valueOf(contract.itemAmount())),
                 Placeholder.unparsed("item", contract.itemType().name())
+        ));
+        lore.add(configManager.getMessage("player-inv-gui-lore-amount", player, false,
+                Placeholder.unparsed("amount", String.valueOf(contract.itemAmount()))
         ));
         lore.add(configManager.getMessage("player-inv-gui-lore-reward", player, false,
                 Placeholder.unparsed("reward", String.format("%,.2f", contract.reward()))
@@ -67,6 +69,8 @@ public class PlayerInventoryGUI {
                 meta = item.getItemMeta();
                 meta.displayName(configManager.getMessage("player-inv-gui-status-available-title", player, false));
                 lore.add(configManager.getMessage("player-inv-gui-status-available-lore", player, false));
+                lore.add(Component.empty());
+                lore.add(configManager.getMessage("player-inv-gui-lore-cancel", player, false));
                 break;
 
             case IN_PROGRESS:
