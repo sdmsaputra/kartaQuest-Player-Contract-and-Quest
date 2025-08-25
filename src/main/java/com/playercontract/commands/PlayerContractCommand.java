@@ -153,7 +153,9 @@ public class PlayerContractCommand implements CommandExecutor, TabCompleter {
 
     private void handleCreateCommand(Player player, String[] args) {
         if (args.length < 4 || args.length > 5) {
-            player.sendMessage(plugin.getConfigManager().getMessage("creation-usage", player));
+            player.sendMessage(plugin.getConfigManager().getMessage("creation-usage", player, false));
+            player.sendMessage(plugin.getConfigManager().getMessage("creation-usage-price", player, false));
+            player.sendMessage(plugin.getConfigManager().getMessage("creation-usage-duration", player, false));
             return;
         }
 

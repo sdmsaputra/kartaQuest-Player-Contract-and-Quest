@@ -12,6 +12,7 @@ Karta PlayerContract is a Minecraft plugin that enhances player interaction by c
 - **Reputation System:** Gain reputation by completing contracts and lose it by canceling them. Check your own or others' reputation with `/contract reputation`.
 - **Visual Improvements:** The in-game GUI now has a cleaner look with non-italicized text and better-organized item details.
 - **Tab-Completion for Items:** When creating a contract, the item argument will now suggest available items.
+- **Command Guidance:** The `/contract create` command now provides clear guidance on how to correctly specify the price and duration for a new contract.
 - **Vault Integration:** Uses Vault for all economic transactions.
 - **Time-Limited Contracts:** Optionally set a time limit for contracts.
 - **Admin Commands:** Admins can reload the configuration and manage contracts.
@@ -27,7 +28,7 @@ Aliases: `/contract`
 | --- | --- |
 | (no subcommand) | Opens the main contract board GUI. |
 | `inv` or `inventory` | Opens your personal contract inventory to see your active and completed contracts. You can also cancel contracts you have created from this menu. |
-| `create <item> <amount> <price> [time]` | Creates a new contract. Example: `/contract create DIAMOND 16 1000 7d` |
+| `create <item> <amount> <price> [time]` | Creates a new contract. <br> - `<price>`: The total amount you will pay the player who completes the contract. <br> - `[time_limit]` is an optional duration for the contract (e.g., 7d, 12h, 30m). |
 | `status` | Checks the status of your currently accepted contract. |
 | `complete` | Turns in the required items to complete your contract. |
 | `cancel` | Cancels your current contract (incurs a reputation penalty). |

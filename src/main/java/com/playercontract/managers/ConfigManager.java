@@ -103,6 +103,9 @@ public class ConfigManager {
 
         String formattedMessage = formatString(player, prefix + messageFormat);
 
+        // Remove all MiniMessage tags that remove italics
+        formattedMessage = formattedMessage.replace("<!italic>", "");
+
         return miniMessage.deserialize(formattedMessage, placeholders);
     }
 
