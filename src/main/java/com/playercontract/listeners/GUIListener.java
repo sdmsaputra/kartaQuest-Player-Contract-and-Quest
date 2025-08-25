@@ -68,14 +68,22 @@ public class GUIListener implements Listener {
             if (contractId == null) return;
 
             Contract contract = plugin.getContractManager().getContract(contractId);
-            if (contract == null || contract.status() != Contract.ContractStatus.COMPLETED_UNCLAIMED) {
+            if (contract == null) return;
+
+            // Handle contract cancellation
+            if (event.isRightClick() && contract.status() == Contract.ContractStatus.AVAILABLE) {
+                plugin.getContractManager().removeContract(contractId);
+                player.closeInventory();
+                player.sendMessage(plugin.getConfigManager().getMessage("contract-deleted-own", player));
+                return;
+            }
+
+            if (contract.status() != Contract.ContractStatus.COMPLETED_UNCLAIMED) {
                 // Item is not a completed contract, do nothing.
                 return;
             }
 
             // This is a completed contract, let the player claim it.
-            // Note: The original request was to claim the *items*, but the flow seems to be that the worker gets the *money*.
-            // I will implement it so the worker gets the money reward. The creator of the contract can get the items using /kontrak claim.
             plugin.getEconomyManager().depositPlayer(player, contract.reward());
             plugin.getReputationManager().addReputation(player.getUniqueId(), 1);
             plugin.getReputationManager().incrementCompletedContracts(player.getUniqueId());
