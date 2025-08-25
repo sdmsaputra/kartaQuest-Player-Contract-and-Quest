@@ -1,13 +1,13 @@
 /app/src/main/java/com/playercontract/managers/ConfigManager.java
 /app/src/main/java/com/playercontract/gui/ContractGUIHolder.java
 /app/src/main/java/com/playercontract/listeners/GUIListener.java
-/app/src/main/java/com/playercontract/commands/PlayerContractCommand.java
 /app/src/main/java/com/playercontract/expansion/PlayerContractExpansion.java
+/app/src/main/java/com/playercontract/commands/PlayerContractCommand.java
 /app/src/main/java/com/playercontract/gui/ContractGUI.java
 /app/src/main/java/com/playercontract/gui/PlayerInventoryGUI.java
 /app/src/main/java/com/playercontract/managers/EconomyManager.java
-/app/src/main/java/com/playercontract/managers/ContractManager.java
 /app/src/main/java/com/playercontract/managers/ReputationManager.java
+/app/src/main/java/com/playercontract/managers/ContractManager.java
 /app/src/main/java/com/playercontract/gui/PlayerInventoryGUIHolder.java
 /app/src/main/java/com/playercontract/utils/DataManager.java
 /app/src/main/java/com/playercontract/data/Contract.java

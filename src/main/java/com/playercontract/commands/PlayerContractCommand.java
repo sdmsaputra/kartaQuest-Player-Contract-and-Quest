@@ -108,6 +108,15 @@ public class PlayerContractCommand implements CommandExecutor, TabCompleter {
                 }
             }
             return completions;
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("create")) {
+            String currentArg = args[1].toUpperCase();
+            List<String> materials = new ArrayList<>();
+            for (Material m : Material.values()) {
+                if (m.name().startsWith(currentArg)) {
+                    materials.add(m.name());
+                }
+            }
+            return materials;
         }
         return new ArrayList<>();
     }

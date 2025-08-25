@@ -32,9 +32,9 @@ public class GUIListener implements Listener {
             UUID contractId = holder.getContractIdAtSlot(event.getRawSlot());
             if (contractId == null) {
                 // Handle navigation clicks
-                if (event.getRawSlot() == 45) { // Previous Page
+                if (event.getRawSlot() == 45 && event.getCurrentItem() != null) { // Previous Page
                     new com.playercontract.gui.ContractGUI(plugin, player, holder.getPage() - 1).open();
-                } else if (event.getRawSlot() == 53) { // Next Page
+                } else if (event.getRawSlot() == 53 && event.getCurrentItem() != null) { // Next Page
                     new com.playercontract.gui.ContractGUI(plugin, player, holder.getPage() + 1).open();
                 }
                 return;

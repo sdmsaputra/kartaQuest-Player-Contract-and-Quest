@@ -1,4 +1,4 @@
-# Karta PlayerContract - v2.1.3-BETA
+# Karta PlayerContract - v2.2.0
 
 Karta PlayerContract is a Minecraft plugin that enhances player interaction by creating a formalized system of contracts, tasks, and reputation. It allows players to post jobs for others to complete, fostering a dynamic and player-driven economy.
 
@@ -9,6 +9,7 @@ Karta PlayerContract is a Minecraft plugin that enhances player interaction by c
 - **Personal Inventory GUI:** A new GUI (`/contract inv`) allows players to view their accepted and completed contracts, see who created them, and track how long they've been active.
 - **Click-to-Claim Rewards:** Once a contract is completed, the worker can simply click the item in their personal inventory GUI to receive their payment.
 - **Reputation System:** Gain reputation by completing contracts and lose it by canceling them. Check your own or others' reputation with `/contract reputation`.
+- **Tab-Completion for Items:** When creating a contract, the item argument will now suggest available items.
 - **Vault Integration:** Uses Vault for all economic transactions.
 - **Time-Limited Contracts:** Optionally set a time limit for contracts.
 - **Admin Commands:** Admins can reload the configuration and manage contracts.
@@ -17,8 +18,8 @@ Karta PlayerContract is a Minecraft plugin that enhances player interaction by c
 
 Here is a list of all the commands available in Karta PlayerContract.
 
-### Main Command: `/contract`
-Aliases: `/kontrak`, `/kpc`
+### Main Command: `/playercontract`
+Aliases: `/contract`
 
 | Subcommand | Description |
 | --- | --- |
