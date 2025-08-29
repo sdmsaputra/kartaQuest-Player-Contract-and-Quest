@@ -1,14 +1,69 @@
 name: KartaPlayerContract
-version: '${project.version}'
-main: com.playercontract.PlayerContract
+version: '${version}'
+main: com.minekarta.karta.playercontract.KartaPlayerContract
 api-version: '1.21'
-author: MinekartaStudio
-description: A quest/contract board plugin for PaperMC.
-depend:
+folia-supported: true
+author: Jules (AI Engineer)
+description: A modern, GUI-based player contract system.
+website: https://minekarta.com
+
+# Soft dependencies allow the plugin to load even if these are not present.
+# The plugin should handle their absence gracefully.
+softdepend:
   - Vault
   - PlaceholderAPI
 
+# Commands as per the new specification
 commands:
-  kartaplayercontract:
-    description: Main command for the Karta PlayerContract plugin.
-    aliases: [playercontract, contract]
+  contract:
+    description: Main command for KartaPlayerContract. Opens the main menu.
+    aliases: [playercontract, pc]
+    usage: "/<command> [subcommand]"
+
+# Permissions as per the new specification
+permissions:
+  karta.contract.admin:
+    description: Grants access to all admin commands.
+    default: op
+    children:
+      karta.contract.admin.reload: true
+      karta.contract.admin.open: true
+      karta.contract.admin.give: true
+      karta.contract.admin.payout: true
+      karta.contract.admin.setstate: true
+  karta.contract.admin.reload:
+    description: Allows reloading the plugin's configuration.
+    default: op
+  karta.contract.admin.open:
+    description: Allows opening the contract menu for other players.
+    default: op
+  karta.contract.admin.give:
+    description: Allows giving a contract to a player from a template.
+    default: op
+  karta.contract.admin.payout:
+    description: Allows forcing a payout for a contract.
+    default: op
+  karta.contract.admin.setstate:
+    description: Allows changing the state of a contract.
+    default: op
+
+  karta.contract.user:
+    description: Grants access to base user features.
+    default: true # Grant all user perms by default
+    children:
+      karta.contract.open: true
+      karta.contract.history: true
+      karta.contract.stats: true
+      karta.contract.inventory: true
+  karta.contract.open:
+    description: Allows opening the contract menu.
+    default: true
+  karta.contract.history:
+    description: Allows accessing the contract history GUI.
+    default: true
+  karta.contract.stats:
+    description: Allows accessing the statistics GUI.
+    default: true
+  karta.contract.inventory:
+    description: Allows issuers to access their delivery inbox.
+    default: true

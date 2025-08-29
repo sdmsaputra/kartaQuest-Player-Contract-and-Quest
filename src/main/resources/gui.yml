@@ -1,0 +1,95 @@
+# KartaPlayerContract GUI Configuration
+# All 'name' and 'lore' fields support MiniMessage format.
+# Materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+# For custom models, use the format: { material: "PAPER", custom_model_data: 12345 }
+
+main-menu:
+  title: "<blue>Menu Utama Kontrak"
+  size: 54
+  buttons:
+    contract-list:
+      item: { material: "WRITABLE_BOOK" }
+      slot: 20
+      name: "<aqua>Daftar Kontrak"
+      lore:
+        - "<gray>Lihat semua kontrak yang tersedia"
+        - "<gray>dan yang sedang kamu kerjakan."
+        - ""
+        - "<yellow>Klik untuk membuka!"
+    delivery-inbox:
+      item: { material: "CHEST" }
+      slot: 22
+      name: "<gold>Inbox Pengiriman"
+      lore:
+        - "<gray>Lihat dan kelola item yang"
+        - "<gray>telah dikirim oleh pelaksana kontrak."
+        - ""
+        - "<yellow>Klik untuk membuka!"
+    history:
+      item: { material: "BOOK" }
+      slot: 24
+      name: "<yellow>Riwayat Kontrak"
+      lore:
+        - "<gray>Lihat riwayat semua kontrak"
+        - "<gray>yang pernah kamu terlibat di dalamnya."
+        - ""
+        - "<yellow>Klik untuk membuka!"
+    statistics:
+      item: { material: "NETHER_STAR" }
+      slot: 31
+      name: "<green>Statistik Pemain"
+      lore:
+        - "<gray>Lihat statistik personalmu"
+        - "<gray>terkait kontrak."
+        - ""
+        - "<yellow>Klik untuk membuka!"
+    profile-header:
+      item: { material: "PLAYER_HEAD" } # This will be replaced by the player's actual head
+      slot: 4
+      name: "<green><player_name>"
+      lore:
+        - "<gray>Kontrak Aktif: <white><active_contracts>"
+        - "<gray>Kontrak Selesai: <white><completed_contracts>"
+        - "<gray>Total Pendapatan: <gold><total_earned>"
+  decoration:
+    border-pane:
+      item: { material: "GRAY_STAINED_GLASS_PANE" }
+      name: " "
+
+contract-list:
+  title: "<blue>Daftar Kontrak <gray>(Hal: <page>/<total_pages>)"
+  size: 54
+  filter-buttons:
+    all:
+      item: { material: "BOOK" }
+      name: "<aqua>Filter: Semua"
+    available:
+      item: { material: "EMERALD" }
+      name: "<green>Filter: Tersedia"
+    in-progress:
+      item: { material: "DIAMOND_SWORD" }
+      name: "<yellow>Filter: Dikerjakan"
+  sort-buttons:
+    newest:
+      item: { material: "CLOCK" }
+      name: "<aqua>Urutkan: Terbaru"
+    highest-reward:
+      item: { material: "GOLD_INGOT" }
+      name: "<green>Urutkan: Bayaran Tertinggi"
+  navigation:
+    next-page:
+      item: { material: "ARROW" }
+      name: "<green>Halaman Berikutnya"
+    previous-page:
+      item: { material: "ARROW" }
+      name: "<red>Halaman Sebelumnya"
+  contract-item:
+    # Placeholders: <title>, <issuer>, <reward>, <time_left>, <status>
+    name: "<gold><title>"
+    lore:
+      - "<gray>Oleh: <white><issuer>"
+      - "<gray>Bayaran: <yellow><reward>"
+      - "<gray>Sisa Waktu: <white><time_left>"
+      - ""
+      - "<green>Status: <status>"
+      - "<yellow>Klik untuk detail!"
