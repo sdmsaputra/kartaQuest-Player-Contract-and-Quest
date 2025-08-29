@@ -1,0 +1,16 @@
+# Gradle
+.gradle/
+build/
+target/
+
+# IDE
+.idea/
+*.iml
+*.iws
+.project
+.classpath
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db

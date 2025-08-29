@@ -5,6 +5,7 @@ plugins {
     kotlin("jvm") version "1.9.23"
     id("io.papermc.paperweight.userdev") version "1.7.1"
     id("xyz.jpenilla.run-paper") version "2.2.4"
+    id("com.gradleup.shadow") version "8.3.6"
 }
 
 group = "com.minekarta.karta"
@@ -67,11 +68,12 @@ tasks {
 
     // Configure runServer task for local testing
     runServer {
-        mcVersion = "1.21"
-        paperVersion.set("1.21-4-SNAPSHOT")
-        javaVersion.set(21)
-        // Automatically accept EULA
-        eula.set(true)
+        minecraftVersion("1.21")
+    }
+
+    shadowJar {
+        val bstatsPath = "org.bstats"
+        relocate(bstatsPath, "${project.group}.${project.name.lowercase()}.lib.$bstatsPath")
     }
 }
 
@@ -81,6 +83,5 @@ java {
 
 // Shading bStats
 tasks.reobfJar {
-    val bstatsPath = "org.bstats"
-    relocate(bstatsPath, "${project.group}.${project.name.lowercase()}.lib.$bstatsPath")
+    // This is now handled by the shadowJar task
 }
