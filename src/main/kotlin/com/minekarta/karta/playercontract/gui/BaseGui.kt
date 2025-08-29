@@ -4,6 +4,7 @@ import com.minekarta.karta.playercontract.KartaPlayerContract
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
@@ -37,6 +38,7 @@ abstract class BaseGui(
     fun open() {
         initializeItems()
         player.openInventory(inventory)
+        playSound("gui.open-sound")
     }
 
     /**
@@ -45,7 +47,10 @@ abstract class BaseGui(
      */
     fun handleClick(event: InventoryClickEvent) {
         event.isCancelled = true // Prevent players from taking items by default
-        clickActions[event.rawSlot]?.invoke(event)
+        if (clickActions.containsKey(event.rawSlot)) {
+            playSound("gui.click-sound")
+            clickActions[event.rawSlot]?.invoke(event)
+        }
     }
 
     /**
@@ -89,4 +94,14 @@ abstract class BaseGui(
     }
 
     override fun getInventory(): Inventory = inventory
+
+    private fun playSound(soundKey: String) {
+        val soundName = plugin.messageManager.getRawMessage(soundKey)
+        try {
+            val sound = Sound.valueOf(soundName.uppercase())
+            player.playSound(player.location, sound, 1.0f, 1.0f)
+        } catch (e: IllegalArgumentException) {
+            plugin.logger.warning("Invalid sound name in messages.yml: $soundName")
+        }
+    }
 }

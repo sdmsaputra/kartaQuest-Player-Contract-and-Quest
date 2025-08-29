@@ -29,12 +29,24 @@ class GuiConfigManager(private val plugin: KartaPlayerContract) {
         loadConfig()
     }
 
-    fun getMainMenuTitle(): Component {
-        val title = guiConfig.getString("main-menu.title", "<blue>Main Menu")!!
-        return MiniMessage.miniMessage().deserialize(title)
+    private fun deserialize(text: String): Component {
+        return MiniMessage.miniMessage().deserialize("<italic:false>$text")
     }
 
-    fun getMainMenuSize(): Int = guiConfig.getInt("main-menu.size", 54)
+    private fun deserialize(lore: List<String>): List<Component> {
+        return lore.map { MiniMessage.miniMessage().deserialize("<italic:false>$it") }
+    }
+
+    fun getTitle(path: String, default: String): Component {
+        val title = guiConfig.getString(path, default)!!
+        return deserialize(title)
+    }
+
+    fun getSize(path: String, default: Int): Int = guiConfig.getInt(path, default)
+
+    fun getMainMenuTitle(): Component = getTitle("main-menu.title", "<blue>Main Menu")
+
+    fun getMainMenuSize(): Int = getSize("main-menu.size", 54)
 
     fun getButtonItem(path: String, vararg placeholders: Pair<String, String>): ItemStack {
         val materialName = guiConfig.getString("$path.item.material", "STONE")!!
@@ -51,8 +63,8 @@ class GuiConfigManager(private val plugin: KartaPlayerContract) {
 
         val item = ItemStack(material)
         val meta = item.itemMeta
-        meta.displayName(MiniMessage.miniMessage().deserialize(name))
-        meta.lore(lore.map { MiniMessage.miniMessage().deserialize(it) })
+        meta.displayName(deserialize(name))
+        meta.lore(deserialize(lore))
         if (customModelData > 0) {
             meta.setCustomModelData(customModelData)
         }

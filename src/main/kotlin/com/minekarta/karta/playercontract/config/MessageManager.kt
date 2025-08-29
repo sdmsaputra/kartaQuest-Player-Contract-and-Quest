@@ -35,4 +35,17 @@ class MessageManager(private val plugin: KartaPlayerContract) {
         }
         return MiniMessage.miniMessage().deserialize(message)
     }
+
+    fun getPrefixedMessage(path: String, vararg placeholders: Pair<String, String>): Component {
+        val prefix = messageConfig.getString("prefix", "")!!
+        var message = messageConfig.getString(path, "Message not found: $path")!!
+        for ((key, value) in placeholders) {
+            message = message.replace("<$key>", value)
+        }
+        return MiniMessage.miniMessage().deserialize(prefix + message)
+    }
+
+    fun getRawMessage(path: String): String {
+        return messageConfig.getString(path, "Message not found: $path")!!
+    }
 }

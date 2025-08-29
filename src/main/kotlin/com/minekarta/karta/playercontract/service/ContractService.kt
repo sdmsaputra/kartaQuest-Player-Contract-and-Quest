@@ -34,5 +34,11 @@ interface ContractService {
      */
     fun expireContracts(): CompletableFuture<Int>
 
+    /**
+     * Gets all contracts that are currently active (available or in progress).
+     * @return A CompletableFuture that completes with a list of active contracts.
+     */
+    fun getActiveContracts(): CompletableFuture<List<Contract>>
+
     // Other methods like createContract, deliverToContract, etc. will be added here.
 }
