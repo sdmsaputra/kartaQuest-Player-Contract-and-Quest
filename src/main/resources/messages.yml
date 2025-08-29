@@ -1,0 +1,50 @@
+# KartaPlayerContract Messages
+# All messages support MiniMessage format: https://docs.advntr.dev/minimessage/format.html
+
+prefix: "<gray>[<aqua>KartaContract</aqua>]</gray> "
+
+# General command feedback
+main:
+  open: "<green>Membuka menu kontrak...</green>"
+  reload: "<green>Konfigurasi KartaPlayerContract berhasil dimuat ulang.</green>"
+  player-not-found: "<red>Pemain <player> tidak ditemukan atau tidak online.</red>"
+
+# Contract lifecycle messages
+contract:
+  accepted: "<green>Kontrak '<white><title></white>' diterima! Kerjakan sebelum kadaluarsa.</green>"
+  delivered: "<yellow>Item untuk kontrak '<white><title></white>' telah dikirim. Menunggu review dari pemberi kontrak.</yellow>"
+  completed: "<gold>Kontrak '<white><title></white>' selesai! Kamu menerima <reward>!</gold>"
+  expired: "<red>Kontrak '<white><title></white>' telah kadaluarsa.</red>"
+  cancelled: "<gray>Kontrak '<white><title></white>' telah dibatalkan.</gray>"
+  abandoned: "<gray>Kamu telah meninggalkan kontrak '<white><title></white>'.</gray>"
+
+  # Delivery review messages
+  delivery_accepted: "<green>Pengirimanmu untuk '<white><title></white>' telah diterima oleh <issuer>!</green>"
+  delivery_rejected: "<red>Pengirimanmu untuk '<white><title></white>' ditolak oleh <issuer>. Alasan: <reason></red>"
+
+  # Issuer notifications
+  issuer:
+    delivery_received: "<aqua>Pemain <contractor> telah mengirimkan item untuk kontrak '<white><title></white>'. Buka Delivery Inbox untuk mereview.</aqua>"
+    items_claimed: "<green>Item dari kontrak '<white><title></white>' telah diklaim.</green>"
+    payout_sent: "<green>Pembayaran untuk <contractor> telah dikirim.</green>"
+
+# Error messages
+error:
+  no_permission: "<red>Kamu tidak memiliki izin untuk melakukan ini.</red>"
+  inventory_full: "<red>Inventaris kamu penuh! Item tidak dapat diberikan.</red>"
+  inventory_full_claim: "<red>Inventaris kamu penuh! Buka /contract inbox untuk mengklaim item secara manual.</red>"
+  not_enough_items: "<red>Kamu tidak memiliki item yang cukup untuk menyelesaikan pengiriman.</red>"
+  contract_limit_reached: "<red>Kamu telah mencapai batas maksimal kontrak aktif.</red>"
+  contract_not_available: "<red>Kontrak ini tidak lagi tersedia.</red>"
+  cannot_accept_own: "<red>Kamu tidak bisa menerima kontrak yang kamu buat sendiri.</red>"
+  generic: "<red>Terjadi kesalahan. Silakan hubungi administrator.</red>"
+
+# Confirmation GUI
+confirm:
+  title: "Konfirmasi Aksi"
+  confirm_item: "<green>KONFIRMASI"
+  cancel_item: "<red>BATAL"
+  abandon_lore:
+    - "<gray>Apakah kamu yakin ingin"
+    - "<gray>meninggalkan kontrak ini?"
+    - "<red>Aksi ini tidak dapat diurungkan."

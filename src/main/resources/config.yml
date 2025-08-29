@@ -1,9 +1,55 @@
-# Karta PlayerContract Configuration File
-#
-# All messages support MiniMessage format.
-# Learn more here: https://docs.advntr.dev/minimessage/format.html
+# KartaPlayerContract Main Configuration
+# For documentation, please visit [link-to-wiki]
 
-# General settings
-max-contracts-per-player: 5
-contract-creation-tax-percent: 5.0
-admin-permission: "karta.admin"
+# General Settings
+general:
+  # If true, /contract will open the old contract list directly.
+  # If false, it will open the new main menu.
+  legacyDirectOpenContractList: false
+  # The maximum number of contracts a player can have active (in-progress) at one time.
+  maxActivePerPlayer: 3
+  # Enable bStats metrics. It is highly recommended to keep this enabled to support the developer.
+  enable-bstats: true
+
+# Payout Settings
+payout:
+  # Payout mode can be:
+  # VAULT: Pay money using Vault.
+  # ITEM: Give items as a reward.
+  # MIXED: A combination of both.
+  mode: VAULT
+  # When to trigger the payout:
+  # ACCEPT_DELIVERY: When the contract issuer manually accepts the delivery.
+  # AUTO_WHEN_DELIVERED: As soon as the contractor delivers the items (less secure).
+  payOn: ACCEPT_DELIVERY
+
+# Delivery & Claiming Settings
+delivery:
+  # How should the issuer receive the delivered items?
+  # TO_INVENTORY: Items go directly into the issuer's inventory. Fails if full.
+  # TO_MAILBOX_GUI: Items go into a special claimable GUI/mailbox if inventory is full.
+  claimMode: TO_INVENTORY
+
+# Technical Settings
+# It is recommended not to change these unless you know what you are doing.
+folia:
+  # The plugin will attempt to auto-detect Folia.
+  # You can force it on or off here, but auto-detection is recommended.
+  # enabled: auto
+  enabled: true # Forcing for development as per prompt
+
+database:
+  # Database type. Supported: SQLITE, MYSQL (future)
+  type: SQLITE
+  # SQLite settings
+  sqlite:
+    # File path for the SQLite database.
+    # It's relative to the plugin's data folder.
+    file: "data.db"
+  # MySQL settings (for future use)
+  # mysql:
+  #   host: "localhost"
+  #   port: 3306
+  #   database: "contracts"
+  #   username: "user"
+  #   password: "password"
