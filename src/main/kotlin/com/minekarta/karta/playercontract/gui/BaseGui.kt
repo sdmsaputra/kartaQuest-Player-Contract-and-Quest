@@ -49,6 +49,14 @@ abstract class BaseGui(
     }
 
     /**
+     * Handles a close event for this GUI.
+     * Can be overridden by subclasses to perform cleanup.
+     */
+    open fun handleClose(event: org.bukkit.event.inventory.InventoryCloseEvent) {
+        // By default, do nothing.
+    }
+
+    /**
      * Sets an item in a specific slot of the inventory.
      */
     protected fun setItem(slot: Int, item: ItemStack, onClick: ((InventoryClickEvent) -> Unit)? = null) {

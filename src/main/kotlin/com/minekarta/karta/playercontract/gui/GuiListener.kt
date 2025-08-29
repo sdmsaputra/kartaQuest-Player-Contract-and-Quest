@@ -3,6 +3,7 @@ package com.minekarta.karta.playercontract.gui
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryCloseEvent
 
 /**
  * A centralized listener for all GUI interactions.
@@ -17,6 +18,14 @@ class GuiListener : Listener {
         if (holder is BaseGui) {
             // If it is, delegate the click handling to that specific GUI instance.
             holder.handleClick(event)
+        }
+    }
+
+    @EventHandler
+    fun onInventoryClose(event: InventoryCloseEvent) {
+        val holder = event.inventory.holder
+        if (holder is BaseGui) {
+            holder.handleClose(event)
         }
     }
 }
