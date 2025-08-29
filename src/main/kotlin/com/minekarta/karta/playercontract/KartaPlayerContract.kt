@@ -4,10 +4,8 @@ import com.minekarta.karta.playercontract.command.ContractCommand
 import com.minekarta.karta.playercontract.config.GuiConfigManager
 import com.minekarta.karta.playercontract.config.MessageManager
 import com.minekarta.karta.playercontract.gui.GuiListener
-import com.minekarta.karta.playercontract.persistence.DatabaseManager
-import com.minekarta.karta.playercontract.persistence.SQLiteContractRepository
-import com.minekarta.karta.playercontract.service.ContractService
-import com.minekarta.karta.playercontract.service.ContractServiceImpl
+import com.minekarta.karta.playercontract.persistence.*
+import com.minekarta.karta.playercontract.service.*
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.concurrent.TimeUnit
 
@@ -20,6 +18,12 @@ class KartaPlayerContract : JavaPlugin() {
     lateinit var dbManager: DatabaseManager
         private set
     lateinit var contractService: ContractService
+        private set
+    lateinit var inventoryService: InventoryService
+        private set
+    lateinit var historyService: HistoryService
+        private set
+    lateinit var playerStatsService: PlayerStatsService
         private set
     lateinit var guiConfigManager: GuiConfigManager
         private set
@@ -38,9 +42,17 @@ class KartaPlayerContract : JavaPlugin() {
 
         // 3. Initialize Repositories
         val contractRepository = SQLiteContractRepository(dbManager)
+        val playerStatsRepository = SQLitePlayerStatsRepository(dbManager)
+        val historyRepository = SQLiteHistoryRepository(dbManager)
+        val deliveryPackageRepository = SQLiteDeliveryPackageRepository(dbManager)
+
 
         // 4. Initialize Services
         contractService = ContractServiceImpl(contractRepository)
+        inventoryService = InventoryServiceImpl(deliveryPackageRepository)
+        historyService = HistoryServiceImpl(historyRepository)
+        playerStatsService = PlayerStatsServiceImpl(playerStatsRepository)
+
 
         // 5. Register Commands
         val contractCommand = ContractCommand(this, guiConfigManager, messageManager)

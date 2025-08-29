@@ -17,29 +17,25 @@ class MainMenuGui(
         // Contract List Button
         val contractListPath = "main-menu.buttons.contract-list"
         setItem(guiConfig.getButtonSlot(contractListPath), guiConfig.getButtonItem(contractListPath)) {
-            player.sendMessage(Component.text("You clicked the Contract List button!"))
-            // Future: GuiRouter.open(ContractListGui(plugin, player, guiConfig, 0))
+            ContractListGui(plugin, player, guiConfig, plugin.contractService).open()
         }
 
-        // Delivery Inbox Button
-        val deliveryInboxPath = "main-menu.buttons.delivery-inbox"
-        setItem(guiConfig.getButtonSlot(deliveryInboxPath), guiConfig.getButtonItem(deliveryInboxPath)) {
-            player.sendMessage(Component.text("You clicked the Delivery Inbox button!"))
-            // Future: GuiRouter.open(DeliveryInboxGui(...))
+        // Inventory Button
+        val inventoryPath = "main-menu.buttons.inventory"
+        setItem(guiConfig.getButtonSlot(inventoryPath), guiConfig.getButtonItem(inventoryPath)) {
+            InventoryGui(plugin, player, guiConfig, plugin.inventoryService).open()
         }
 
         // History Button
         val historyPath = "main-menu.buttons.history"
         setItem(guiConfig.getButtonSlot(historyPath), guiConfig.getButtonItem(historyPath)) {
-            player.sendMessage(Component.text("You clicked the History button!"))
-            // Future: GuiRouter.open(HistoryGui(...))
+            HistoryGui(plugin, player, guiConfig, plugin.historyService).open()
         }
 
         // Statistics Button
         val statsPath = "main-menu.buttons.statistics"
         setItem(guiConfig.getButtonSlot(statsPath), guiConfig.getButtonItem(statsPath)) {
-            player.sendMessage(Component.text("You clicked the Statistics button!"))
-            // Future: GuiRouter.open(StatisticsGui(...))
+            StatsGui(plugin, player, guiConfig, plugin.playerStatsService).open()
         }
 
         // --- Profile Header ---

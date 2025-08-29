@@ -3,8 +3,9 @@ package com.minekarta.karta.playercontract.command
 import com.minekarta.karta.playercontract.KartaPlayerContract
 import com.minekarta.karta.playercontract.config.GuiConfigManager
 import com.minekarta.karta.playercontract.config.MessageManager
-import com.minekarta.karta.playercontract.gui.MainMenuGui
+import com.minekarta.karta.playercontract.gui.*
 import org.bukkit.Bukkit
+import org.bukkit.Sound
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -28,7 +29,36 @@ class ContractCommand(
             return true
         }
 
+        val player = sender as? Player
         when (args[0].lowercase()) {
+            "list" -> {
+                if (player == null) {
+                    sender.sendMessage(messageManager.getMessage("command.player-only"))
+                    return true
+                }
+                ContractListGui(plugin, player, guiConfig, plugin.contractService).open()
+            }
+            "inventory" -> {
+                if (player == null) {
+                    sender.sendMessage(messageManager.getMessage("command.player-only"))
+                    return true
+                }
+                // InventoryGui(plugin, player, guiConfig, plugin.inventoryService).open()
+            }
+            "history" -> {
+                if (player == null) {
+                    sender.sendMessage(messageManager.getMessage("command.player-only"))
+                    return true
+                }
+                // HistoryGui(plugin, player, guiConfig, plugin.historyService).open()
+            }
+            "stats" -> {
+                if (player == null) {
+                    sender.sendMessage(messageManager.getMessage("command.player-only"))
+                    return true
+                }
+                // StatsGui(plugin, player, guiConfig, plugin.statsService).open()
+            }
             "reload" -> handleReload(sender)
             "open" -> handleOpen(sender, args)
             "help" -> showHelp(sender)
@@ -73,14 +103,25 @@ class ContractCommand(
     }
 
     private fun showHelp(sender: CommandSender) {
-        // This could also be moved to a multi-line message in messages.yml
-        sender.sendMessage(messageManager.getMessage("command.help-header"))
-        sender.sendMessage(messageManager.getMessage("command.help-base"))
+        messageManager.getPrefixedMessage("command.help-header").let(sender::sendMessage)
+        messageManager.getPrefixedMessage("command.help-base").let(sender::sendMessage)
+        if (sender.hasPermission("karta.contract.list")) {
+            messageManager.getPrefixedMessage("command.help-list").let(sender::sendMessage)
+        }
+        if (sender.hasPermission("karta.contract.inventory")) {
+            messageManager.getPrefixedMessage("command.help-inventory").let(sender::sendMessage)
+        }
+        if (sender.hasPermission("karta.contract.history")) {
+            messageManager.getPrefixedMessage("command.help-history").let(sender::sendMessage)
+        }
+        if (sender.hasPermission("karta.contract.stats")) {
+            messageManager.getPrefixedMessage("command.help-stats").let(sender::sendMessage)
+        }
         if (sender.hasPermission("karta.contract.admin.reload")) {
-            sender.sendMessage(messageManager.getMessage("command.help-reload"))
+            messageManager.getPrefixedMessage("command.help-reload").let(sender::sendMessage)
         }
         if (sender.hasPermission("karta.contract.admin.open")) {
-            sender.sendMessage(messageManager.getMessage("command.help-open"))
+            messageManager.getPrefixedMessage("command.help-open").let(sender::sendMessage)
         }
     }
 
@@ -99,7 +140,7 @@ class ContractCommand(
         val completions = mutableListOf<String>()
         when (args.size) {
             1 -> {
-                val subcommands = mutableListOf("help")
+                val subcommands = mutableListOf("help", "list", "inventory", "history", "stats")
                 if (sender.hasPermission("karta.contract.admin.reload")) subcommands.add("reload")
                 if (sender.hasPermission("karta.contract.admin.open")) subcommands.add("open")
                 StringUtil.copyPartialMatches(args[0], subcommands, completions)

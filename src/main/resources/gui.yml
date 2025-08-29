@@ -4,92 +4,161 @@
 # For custom models, use the format: { material: "PAPER", custom_model_data: 12345 }
 
 main-menu:
-  title: "<blue>Menu Utama Kontrak"
+  title: "<blue>Contract Main Menu"
   size: 54
   buttons:
     contract-list:
       item: { material: "WRITABLE_BOOK" }
       slot: 20
-      name: "<aqua>Daftar Kontrak"
+      name: "<aqua>Contract List"
       lore:
-        - "<gray>Lihat semua kontrak yang tersedia"
-        - "<gray>dan yang sedang kamu kerjakan."
+        - "<gray>View all available contracts"
+        - "<gray>and those you are working on."
         - ""
-        - "<yellow>Klik untuk membuka!"
-    delivery-inbox:
+        - "<yellow>Click to open!"
+    inventory:
       item: { material: "CHEST" }
       slot: 22
-      name: "<gold>Inbox Pengiriman"
+      name: "<gold>Reward Inventory"
       lore:
-        - "<gray>Lihat dan kelola item yang"
-        - "<gray>telah dikirim oleh pelaksana kontrak."
+        - "<gray>View and claim rewards"
+        - "<gray>from your completed contracts."
         - ""
-        - "<yellow>Klik untuk membuka!"
+        - "<yellow>Click to open!"
     history:
       item: { material: "BOOK" }
       slot: 24
-      name: "<yellow>Riwayat Kontrak"
+      name: "<yellow>Contract History"
       lore:
-        - "<gray>Lihat riwayat semua kontrak"
-        - "<gray>yang pernah kamu terlibat di dalamnya."
+        - "<gray>View a history of all contracts"
+        - "<gray>you have been involved in."
         - ""
-        - "<yellow>Klik untuk membuka!"
+        - "<yellow>Click to open!"
     statistics:
       item: { material: "NETHER_STAR" }
       slot: 31
-      name: "<green>Statistik Pemain"
+      name: "<green>Player Statistics"
       lore:
-        - "<gray>Lihat statistik personalmu"
-        - "<gray>terkait kontrak."
+        - "<gray>View your personal statistics"
+        - "<gray>related to contracts."
         - ""
-        - "<yellow>Klik untuk membuka!"
+        - "<yellow>Click to open!"
     profile-header:
       item: { material: "PLAYER_HEAD" } # This will be replaced by the player's actual head
       slot: 4
       name: "<green><player_name>"
       lore:
-        - "<gray>Kontrak Aktif: <white><active_contracts>"
-        - "<gray>Kontrak Selesai: <white><completed_contracts>"
-        - "<gray>Total Pendapatan: <gold><total_earned>"
+        - "<gray>Active Contracts: <white><active_contracts>"
+        - "<gray>Completed Contracts: <white><completed_contracts>"
+        - "<gray>Total Earned: <gold><total_earned>"
   decoration:
     border-pane:
       item: { material: "GRAY_STAINED_GLASS_PANE" }
       name: " "
 
 contract-list:
-  title: "<blue>Daftar Kontrak <gray>(Hal: <page>/<total_pages>)"
+  title: "<blue>Contract List <gray>(Page: <page>/<total_pages>)"
   size: 54
   filter-buttons:
     all:
       item: { material: "BOOK" }
-      name: "<aqua>Filter: Semua"
+      name: "<aqua>Filter: All"
     available:
       item: { material: "EMERALD" }
-      name: "<green>Filter: Tersedia"
+      name: "<green>Filter: Available"
     in-progress:
       item: { material: "DIAMOND_SWORD" }
-      name: "<yellow>Filter: Dikerjakan"
+      name: "<yellow>Filter: In Progress"
   sort-buttons:
     newest:
       item: { material: "CLOCK" }
-      name: "<aqua>Urutkan: Terbaru"
+      name: "<aqua>Sort: Newest"
     highest-reward:
       item: { material: "GOLD_INGOT" }
-      name: "<green>Urutkan: Bayaran Tertinggi"
+      name: "<green>Sort: Highest Reward"
   navigation:
     next-page:
       item: { material: "ARROW" }
-      name: "<green>Halaman Berikutnya"
+      name: "<green>Next Page"
     previous-page:
       item: { material: "ARROW" }
-      name: "<red>Halaman Sebelumnya"
+      name: "<red>Previous Page"
   contract-item:
     # Placeholders: <title>, <issuer>, <reward>, <time_left>, <status>
     name: "<gold><title>"
     lore:
-      - "<gray>Oleh: <white><issuer>"
-      - "<gray>Bayaran: <yellow><reward>"
-      - "<gray>Sisa Waktu: <white><time_left>"
+      - "<gray>By: <white><issuer>"
+      - "<gray>Reward: <yellow><reward>"
+      - "<gray>Time Left: <white><time_left>"
       - ""
       - "<green>Status: <status>"
-      - "<yellow>Klik untuk detail!"
+      - "<yellow>Click for details!"
+
+inventory:
+  title: "<gold>Reward Inventory"
+  size: 54
+  claimable-item:
+    # Placeholders: <contract_name>, <reward_description>
+    name: "<green>Claim Reward"
+    lore:
+      - "<gray>From Contract: <white><contract_name>"
+      - "<gray>Reward: <yellow><reward_description>"
+      - ""
+      - "<yellow>Click to claim!"
+  claimed-item:
+    name: "<red>Reward Claimed"
+    lore:
+      - "<gray>You have already claimed this."
+  navigation:
+    next-page:
+      item: { material: "ARROW" }
+      name: "<green>Next Page"
+    previous-page:
+      item: { material: "ARROW" }
+      name: "<red>Previous Page"
+
+history:
+  title: "<yellow>Contract History"
+  size: 54
+  history-item:
+    # Placeholders: <contract_name>, <status>, <date_completed>
+    name: "<gold><contract_name>"
+    lore:
+      - "<gray>Status: <white><status>"
+      - "<gray>Completed: <white><date_completed>"
+  navigation:
+    next-page:
+      item: { material: "ARROW" }
+      name: "<green>Next Page"
+    previous-page:
+      item: { material: "ARROW" }
+      name: "<red>Previous Page"
+
+stats:
+  title: "<green>Player Statistics"
+  size: 27
+  items:
+    total-accepted:
+      item: { material: "DIAMOND" }
+      slot: 10
+      name: "<aqua>Total Contracts Accepted"
+      lore:
+        - "<white><value>"
+    total-completed:
+      item: { material: "GOLD_INGOT" }
+      slot: 12
+      name: "<green>Total Contracts Completed"
+      lore:
+        - "<white><value>"
+    success-rate:
+      item: { material: "EMERALD" }
+      slot: 14
+      name: "<yellow>Success Rate"
+      lore:
+        - "<white><value>%"
+    total-earned:
+      item: { material: "NETHER_STAR" }
+      slot: 16
+      name: "<gold>Total Earnings"
+      lore:
+        - "<white><value>"

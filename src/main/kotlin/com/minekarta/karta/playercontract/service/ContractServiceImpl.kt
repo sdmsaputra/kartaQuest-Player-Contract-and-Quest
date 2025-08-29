@@ -65,4 +65,13 @@ class ContractServiceImpl(
             return@thenCombine expiredContracts.size
         }
     }
+
+    override fun getActiveContracts(): CompletableFuture<List<Contract>> {
+        val availableFuture = contractRepository.findByState(ContractState.AVAILABLE)
+        val inProgressFuture = contractRepository.findByState(ContractState.IN_PROGRESS)
+
+        return availableFuture.thenCombine(inProgressFuture) { available, inProgress ->
+            available + inProgress
+        }
+    }
 }

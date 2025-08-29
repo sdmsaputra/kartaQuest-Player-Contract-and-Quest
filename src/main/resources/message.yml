@@ -6,96 +6,34 @@
 #
 # Placeholders:
 # <player> - Player's name
-# <amount> - Amount
-# <item>   - Item name
-# <price>  - Price
-# <tax>    - Tax
-# <reward> - Reward
-# <creator>- Contract creator
-# <id>     - Contract ID
-# <max>    - Maximum amount
-# <reputation> - Reputation
+# <permission> - Required permission
 # ----------------------------------------------------------------------------------------------------
-version: "2.1.3-BETA"
 prefix: "<gray>[<gold>Contract<gray>] "
 
-# General Messages & Errors
-player-only-command: "<red>This command is for players only."
-unknown-command: "<red>Unknown command. Try /contract.</red>"
-player-not-found: "<red>Player not found.</red>"
-no-permission: "<red>You don't have permission to do this.</red>"
-transaction-error: "<red>An unexpected error occurred during the transaction.</red>"
-invalid-item: "<red>Invalid item '<item>'.</red>"
-invalid-amount: "<red>Invalid amount entered.</red>"
-invalid-price: "<red>Invalid price entered.</red>"
-invalid-time-format: "<red>Invalid time format. Use d (day), h (hour), m (minute), s (second). Example: 7d, 12h, 30m.</red>"
-insufficient-funds: "<red>Insufficient funds. You need <price> + <tax> (tax).</red>"
-cannot-accept-own: "<red>You cannot accept your own contract.</red>"
-already-has-contract: "<red>You already have an active contract.</red>"
+command:
+  player-only: "<red>This command can only be executed by a player."
+  no-permission: "<red>You do not have permission to use this command. (<permission>)"
+  unknown-subcommand: "<red>Unknown subcommand. Use /contract help for a list of commands."
+  reload-success: "<green>Configuration and messages have been reloaded successfully."
+  open-usage: "<red>Usage: /contract open <player>"
+  player-not-found: "<red>Player '<player>' could not be found."
+  open-success: "<green>Opened the contract menu for <player>."
+  help-header: "<gold>--- KartaPlayerContract Help ---"
+  help-base: "<yellow>/contract</yellow> - <gray>Opens the main contract menu."
+  help-list: "<yellow>/contract list</yellow> - <gray>Opens the contract list GUI directly."
+  help-inventory: "<yellow>/contract inventory</yellow> - <gray>Opens your reward inventory."
+  help-history: "<yellow>/contract history</yellow> - <gray>Opens your contract history."
+  help-stats: "<yellow>/contract stats</yellow> - <gray>Opens your player statistics."
+  help-reload: "<yellow>/contract reload</yellow> - <gray>Reloads the plugin configuration."
+  help-open: "<yellow>/contract open <player></yellow> - <gray>Opens the menu for another player."
 
-# Main Commands
-creation-usage: "<yellow>Usage: /contract create <item> <amount> <price> [time_limit]</yellow>"
-creation-usage-price: "<gray><price>: The total amount you will pay the player who completes the contract."
-creation-usage-duration: "<gray>[time_limit]: Optional duration for the contract (e.g., 7d, 12h, 30m)."
-max-contracts-reached: "<red>You have reached the maximum limit of <max> active contracts.</red>"
-contract-created: "<green>Contract successfully created: <amount> <item> for <price>.</green>"
-no-active-contract: "<yellow>You do not have an active contract.</yellow>"
-contract-status: "<gray>Contract Status: <yellow>Bring <amount> <item> for <reward> from <creator>.</yellow>"
-not-enough-items: "<red>You don't have enough <item> (<amount>) to complete the contract.</red>"
-contract-accepted: "<green>You have accepted the contract!</green>"
-contract-completed: "<green>Contract completed! You received <reward> and reputation.</green>"
-contract-cancelled: "<yellow>The contract has been cancelled. Your reputation has decreased.</yellow>"
+gui:
+  # Sounds can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
+  open-sound: "BLOCK_ENDER_CHEST_OPEN"
+  click-sound: "UI_BUTTON_CLICK"
+  error-sound: "BLOCK_ANVIL_LAND"
+  claim-sound: "ENTITY_PLAYER_LEVELUP"
 
-# Item Claim
-no-items-to-claim: "<yellow>No items to claim.</yellow>"
-claimed-items: "<green>You claimed <amount> <item>.</green>"
-reward-claimed: "<green>You have claimed your reward!</green>"
-inventory-full-claim: "<red>Inventory is full! Cannot claim <amount> <item>.</red>"
-
-# Reputation
-reputation-usage: "<yellow>Usage: /contract reputation [player]</yellow>"
-reputation-check-self: "<gray>Your current reputation: <gold><reputation></gold></gray>"
-reputation-check-other: "<gray><player>'s reputation: <gold><reputation></gold></gray>"
-
-# Admin Commands
-admin-help: "<yellow>Admin Commands: /contract admin <reload|delete> [args]</yellow>"
-admin-delete-usage: "<yellow>Usage: /contract admin delete <contract_id></yellow>"
-config-reloaded: "<green>Configuration and messages reloaded successfully.</green>"
-contract-not-found: "<red>Contract with ID '<id>' not found.</red>"
-contract-deleted: "<green>Contract with ID '<id>' has been deleted.</green>"
-contract-deleted-own: "<green>You have cancelled your contract."
-
-# GUI Messages
-gui-title: "<!italic>Contract Board (<page>/<total_pages>)"
-gui-previous-page: "<!italic><green>Previous Page</green>"
-gui-next-page: "<!italic><green>Next Page</green>"
-
-# Contract Item in GUI
-gui-contract-title: "<!italic><gold>Contract: <amount> <item>"
-gui-lore-creator: "<!italic><gray>Creator: <white><player>"
-gui-lore-reward: "<!italic><gray>Reward: <gold><reward>"
-gui-lore-time: "<!italic><gray>Time Left: <red><time>"
-gui-lore-accept: "<!italic><yellow>Click to accept this contract!"
-gui-lore-empty-line: ""
-
-# Player Inventory GUI
-player-inv-gui-title: "<!italic>Your Created Contracts"
-player-inv-gui-lore-item: "<!italic><gray>Item: <white><item>"
-player-inv-gui-lore-amount: "<!italic><gray>Amount: <white><amount>"
-player-inv-gui-lore-reward: "<!italic><gray>Reward: <gold><reward>"
-player-inv-gui-lore-accepted-by: "<!italic><gray>Accepted by: <white><player>"
-player-inv-gui-lore-accepted-at: "<!italic><gray>Accepted: <white><time> ago"
-player-inv-gui-lore-completed-by: "<!italic><gray>Completed by: <white><player>"
-player-inv-gui-lore-completed-at: "<!italic><gray>Completed: <white><time> ago"
-player-inv-gui-lore-claim-items: "<!italic><gold>You can claim the items with /pc claim."
-player-inv-gui-lore-unknown-player: "<!italic><gray>Unknown"
-player-inv-gui-lore-cancel: "<!italic><red>Right-click to cancel contract."
-
-# Player Inventory GUI - Contract Status
-player-inv-gui-status-available-title: "<!italic><green>Status: AVAILABLE"
-player-inv-gui-status-available-lore: "<!italic><gray>This contract is waiting for someone to accept it."
-player-inv-gui-status-in-progress-title: "<!italic><yellow>Status: IN PROGRESS"
-player-inv-gui-status-completed-title: "<!italic><aqua>Status: COMPLETED"
-player-inv-gui-status-expired-title: "<!italic><red>Status: EXPIRED"
-player-inv-gui-status-expired-lore: "<!italic><gray>This contract expired and was not completed."
-player-inv-gui-status-unknown-title: "<!italic><dark_gray>Status: UNKNOWN"
+contract:
+  inventory-full: "<red>Your inventory is full. Please make space to claim your reward."
+  reward-claimed: "<green>Reward claimed!"
