@@ -2,6 +2,7 @@ package com.minekarta.karta.playercontract
 
 import com.minekarta.karta.playercontract.command.ContractCommand
 import com.minekarta.karta.playercontract.config.GuiConfigManager
+import com.minekarta.karta.playercontract.config.MessageManager
 import com.minekarta.karta.playercontract.gui.GuiListener
 import com.minekarta.karta.playercontract.persistence.DatabaseManager
 import com.minekarta.karta.playercontract.persistence.SQLiteContractRepository
@@ -20,11 +21,16 @@ class KartaPlayerContract : JavaPlugin() {
         private set
     lateinit var contractService: ContractService
         private set
+    lateinit var guiConfigManager: GuiConfigManager
+        private set
+    lateinit var messageManager: MessageManager
+        private set
 
     override fun onEnable() {
         // 1. Load Configurations
         saveDefaultConfig()
-        // TODO: Load messages.yml and gui.yml
+        guiConfigManager = GuiConfigManager(this)
+        messageManager = MessageManager(this)
 
         // 2. Initialize Database
         dbManager = DatabaseManager(this)
@@ -36,13 +42,14 @@ class KartaPlayerContract : JavaPlugin() {
         // 4. Initialize Services
         contractService = ContractServiceImpl(contractRepository)
 
-        // 5. Initialize GUI and Config Managers
-        val guiConfigManager = GuiConfigManager(this)
+        // 5. Register Commands
+        val contractCommand = ContractCommand(this, guiConfigManager, messageManager)
+        getCommand("contract")?.let {
+            it.setExecutor(contractCommand)
+            it.tabCompleter = contractCommand
+        }
 
-        // 6. Register Commands
-        getCommand("contract")?.setExecutor(ContractCommand(this, guiConfigManager))
-
-        // 7. Register Listeners
+        // 6. Register Listeners
         server.pluginManager.registerEvents(GuiListener(), this)
 
         // 8. Register PlaceholderAPI Expansion
