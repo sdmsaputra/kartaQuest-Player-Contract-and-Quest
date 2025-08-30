@@ -33,7 +33,7 @@ data class Contract(
     var state: ContractState,
     val createdAt: Instant,
     var updatedAt: Instant,
-    val deliveryProgress: Map<String, Int> = emptyMap() // Key: Material/ItemSpec, Value: Amount delivered
+    var deliveryProgress: Map<String, Int> = emptyMap() // Key: Material/ItemSpec, Value: Amount delivered
 )
 
 /**

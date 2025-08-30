@@ -44,6 +44,27 @@ class SQLiteContractRepository(private val dbManager: DatabaseManager) : Contrac
         }, dbManager.executor)
     }
 
+    override fun findByState(state: ContractState, page: Int, pageSize: Int): CompletableFuture<List<Contract>> {
+        return CompletableFuture.supplyAsync({
+            val contracts = mutableListOf<Contract>()
+            val sql = "SELECT * FROM contracts WHERE state = ? ORDER BY createdAt DESC LIMIT ? OFFSET ?"
+            val offset = (page - 1) * pageSize
+            dbManager.getConnection().use { conn ->
+                conn.prepareStatement(sql).use { stmt ->
+                    stmt.setString(1, state.name)
+                    stmt.setInt(2, pageSize)
+                    stmt.setInt(3, offset)
+                    stmt.executeQuery().use { rs ->
+                        while (rs.next()) {
+                            contracts.add(mapRowToContract(rs))
+                        }
+                    }
+                }
+            }
+            return@supplyAsync contracts
+        }, dbManager.executor)
+    }
+
     override fun findByPlayer(playerUUID: UUID): CompletableFuture<List<Contract>> {
         // Implementation would be similar to findByState, with a different WHERE clause
         // WHERE issuerUUID = ? OR contractorUUID = ?

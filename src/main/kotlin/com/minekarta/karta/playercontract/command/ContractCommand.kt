@@ -2,10 +2,8 @@ package com.minekarta.karta.playercontract.command
 
 import com.minekarta.karta.playercontract.KartaPlayerContract
 import com.minekarta.karta.playercontract.config.MessageManager
+import com.minekarta.karta.playercontract.gui.*
 import com.minekarta.karta.playercontract.util.Result
-import com.minekarta.karta.playercontract.gui.ContractListGui
-import com.minekarta.karta.playercontract.gui.CreateWizardManager
-import com.minekarta.karta.playercontract.gui.MainMenuGui
 import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -37,13 +35,13 @@ class ContractCommand(
             "list" -> ContractListGui(plugin, sender, plugin.guiConfigManager, plugin.contractService).open()
             "take" -> handleTake(sender, args.getOrNull(1))
             "deliver" -> handleDeliver(sender, args.getOrNull(1))
-            "inbox" -> { /* TODO: Open DeliveryInboxGui */ }
-            "history" -> { /* TODO: Open HistoryGui */ }
-            "stats" -> { /* TODO: Open StatsGui */ }
-            "claims" -> { /* TODO: Open ClaimBoxGui */ }
+            "inbox" -> DeliveryInboxGui(plugin, sender).open()
+            "history" -> HistoryGui(plugin, sender, plugin.guiConfigManager, plugin.historyService).open()
+            "stats" -> StatsGui(plugin, sender, plugin.guiConfigManager, plugin.playerStatsService).open()
+            "claims" -> ClaimBoxGui(plugin, sender).open()
             "cancel" -> handleCancel(sender, args.getOrNull(1))
             "reload" -> handleReload(sender)
-            else -> sender.sendMessage(messageManager.getMessage("command.unknown-subcommand"))
+            else -> sender.sendMessage(messageManager.getPrefixedMessage("command.unknown-subcommand"))
         }
 
         return true
@@ -51,7 +49,7 @@ class ContractCommand(
 
     private fun handleCreate(player: Player, args: List<String>) {
         if (!player.hasPermission("karta.contract.create")) {
-            player.sendMessage(messageManager.getMessage("command.no-permission"))
+            player.sendMessage(messageManager.getPrefixedMessage("command.no-permission"))
             return
         }
         if (args.isEmpty()) {
@@ -59,48 +57,87 @@ class ContractCommand(
         } else {
             // TODO: Implement quick-create command parsing
             // e.g. /contract create item DIAMOND 10 reward money 500
-            player.sendMessage("Quick-create is not yet implemented.")
+            player.sendMessage(messageManager.getPrefixedMessage("command.not-implemented"))
         }
     }
 
     private fun handleTake(player: Player, contractIdStr: String?) {
         if (!player.hasPermission("karta.contract.take")) {
-            player.sendMessage(messageManager.getMessage("command.no-permission"))
+            player.sendMessage(messageManager.getPrefixedMessage("command.no-permission"))
             return
         }
-        val contractId = UUID.fromString(contractIdStr)
-        plugin.contractService.takeContract(player.uniqueId, contractId).whenComplete { result: Result<Unit, Error>?, error: Throwable? ->
-            // TODO: Handle result and send messages
+        val contractId = try {
+            UUID.fromString(contractIdStr)
+        } catch (e: Exception) {
+            player.sendMessage(messageManager.getPrefixedMessage("command.invalid-uuid", "uuid" to (contractIdStr ?: "")))
+            return
+        }
+
+        plugin.contractService.takeContract(player.uniqueId, contractId).whenComplete { result, error ->
+            plugin.scheduler.runOnMainThread(player) {
+                if (error != null) {
+                    player.sendMessage(messageManager.getPrefixedMessage("command.generic-error"))
+                    plugin.logger.warning("Error taking contract: ${error.message}")
+                    return@runOnMainThread
+                }
+                when (result) {
+                    is Result.Success -> player.sendMessage(messageManager.getPrefixedMessage("command.take-success", "id" to contractId.toString()))
+                    is Result.Failure -> player.sendMessage(messageManager.getPrefixedMessage("command.take-failure", "reason" to result.error.toString()))
+                    null -> {}
+                }
+            }
         }
     }
 
     private fun handleDeliver(player: Player, contractIdStr: String?) {
         if (contractIdStr == null) {
-            player.sendMessage("Please specify a contract ID.")
+            player.sendMessage(messageManager.getPrefixedMessage("command.id-required"))
             return
         }
-        // TODO: Open DeliveryStagingGui for the given contract ID
-        player.sendMessage("Opening delivery staging for $contractIdStr...")
+        val contractId = try {
+            UUID.fromString(contractIdStr)
+        } catch (e: Exception) {
+            player.sendMessage(messageManager.getPrefixedMessage("command.invalid-uuid", "uuid" to contractIdStr))
+            return
+        }
+        DeliveryStagingGui(plugin, player, contractId).open()
     }
 
     private fun handleCancel(player: Player, contractIdStr: String?) {
          if (!player.hasPermission("karta.contract.manage")) {
-            player.sendMessage(messageManager.getMessage("command.no-permission"))
+            player.sendMessage(messageManager.getPrefixedMessage("command.no-permission"))
             return
         }
-        val contractId = UUID.fromString(contractIdStr)
-        plugin.contractService.cancelContract(player.uniqueId, contractId).whenComplete { result: Result<Unit, Error>?, error: Throwable? ->
-            // TODO: Handle result and send messages
+        val contractId = try {
+            UUID.fromString(contractIdStr)
+        } catch (e: Exception) {
+            player.sendMessage(messageManager.getPrefixedMessage("command.invalid-uuid", "uuid" to (contractIdStr ?: "")))
+            return
+        }
+        plugin.contractService.cancelContract(player.uniqueId, contractId).whenComplete { result, error ->
+            plugin.scheduler.runOnMainThread(player) {
+                if (error != null) {
+                    player.sendMessage(messageManager.getPrefixedMessage("command.generic-error"))
+                    plugin.logger.warning("Error cancelling contract: ${error.message}")
+                    return@runOnMainThread
+                }
+                when (result) {
+                    is Result.Success -> player.sendMessage(messageManager.getPrefixedMessage("command.cancel-success", "id" to contractId.toString()))
+                    is Result.Failure -> player.sendMessage(messageManager.getPrefixedMessage("command.cancel-failure", "reason" to result.error.toString()))
+                    null -> {}
+                }
+            }
         }
     }
 
     private fun handleReload(sender: Player) {
         if (!sender.hasPermission("karta.contract.admin")) {
-            sender.sendMessage(messageManager.getMessage("command.no-permission"))
+            sender.sendMessage(messageManager.getPrefixedMessage("command.no-permission"))
             return
         }
-        // TODO: Reload configs
-        sender.sendMessage(messageManager.getMessage("command.reload-success"))
+        plugin.guiConfigManager.reload()
+        plugin.messageManager.reload()
+        sender.sendMessage(messageManager.getPrefixedMessage("command.reload-success"))
     }
 
 
