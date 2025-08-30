@@ -27,6 +27,12 @@ interface ContractService {
     fun listOpenContracts(page: Int, pageSize: Int): CompletableFuture<List<Contract>>
 
     /**
+     * Counts the total number of open contracts.
+     * @return A future that completes with the total count.
+     */
+    fun countOpenContracts(): CompletableFuture<Int>
+
+    /**
      * Gets a single contract by its unique ID.
      * @param id The UUID of the contract.
      * @return A future that completes with the Contract, or null if not found.

@@ -20,15 +20,16 @@ import org.bukkit.inventory.ItemStack
 abstract class BaseGui(
     protected val plugin: KartaPlayerContract,
     protected val player: Player,
-    private val size: Int,
-    private val title: Component
+    protected val size: Int,
+    protected var title: Component
 ) : InventoryHolder {
 
-    private val inventory: Inventory = Bukkit.createInventory(this, size, title)
+    private lateinit var inventory: Inventory
     private val clickActions: MutableMap<Int, (InventoryClickEvent) -> Unit> = mutableMapOf()
 
     /**
      * Populates the GUI with items. To be implemented by subclasses.
+     * This method is responsible for setting the final title if it's dynamic.
      */
     protected abstract fun initializeItems()
 
@@ -36,9 +37,25 @@ abstract class BaseGui(
      * Opens the inventory for the player.
      */
     fun open() {
+        // Initialize items first, as it might calculate dynamic properties like page numbers
         initializeItems()
+
+        // Now create the inventory with the potentially updated title
+        inventory = Bukkit.createInventory(this, size, title)
+
+        // Populate the now-created inventory
+        populateInventory()
+
         player.openInventory(inventory)
         playSound("gui.open-sound")
+    }
+
+    /**
+    * This new method will be called by initializeItems in subclasses to populate the inventory
+    * after it has been created.
+    */
+    protected open fun populateInventory() {
+        // Default implementation can be empty or subclasses can provide their own.
     }
 
     /**

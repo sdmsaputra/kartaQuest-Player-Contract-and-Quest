@@ -61,6 +61,10 @@ class ContractServiceImpl(
         return contractRepository.findByState(ContractState.AVAILABLE, page, pageSize)
     }
 
+    override fun countOpenContracts(): CompletableFuture<Int> {
+        return contractRepository.countByState(ContractState.AVAILABLE)
+    }
+
     override fun getContract(id: UUID): CompletableFuture<Contract?> {
         return contractRepository.findById(id)
     }

@@ -35,8 +35,6 @@ class KartaPlayerContract : JavaPlugin() {
         private set
     lateinit var messageManager: MessageManager
         private set
-    lateinit var wizardManager: CreateWizardManager
-        private set
     lateinit var scheduler: FoliaScheduler
         private set
     lateinit var chatInputManager: ChatInputManager
@@ -47,9 +45,7 @@ class KartaPlayerContract : JavaPlugin() {
         saveDefaultConfig()
         guiConfigManager = GuiConfigManager(this)
         messageManager = MessageManager(this)
-        wizardManager = CreateWizardManager(this)
         scheduler = FoliaScheduler(this)
-        chatInputManager = ChatInputManager()
 
         // 2. Initialize Database
         dbManager = DatabaseManager(this)
@@ -69,17 +65,20 @@ class KartaPlayerContract : JavaPlugin() {
         historyService = HistoryServiceImpl(historyRepository)
         playerStatsService = PlayerStatsServiceImpl(playerStatsRepository)
 
+        // Must be initialized after services
+        chatInputManager = ChatInputManager(this, messageManager, contractService)
+
 
         // 5. Register Commands
-        val contractCommand = ContractCommand(this, messageManager, wizardManager)
+        val contractCommand = ContractCommand(this, messageManager, contractService)
         getCommand("contract")?.let {
             it.setExecutor(contractCommand)
             it.tabCompleter = contractCommand
         }
 
         // 6. Register Listeners
-        server.pluginManager.registerEvents(GuiListener(wizardManager), this)
-        server.pluginManager.registerEvents(PlayerChatListener(chatInputManager), this)
+        server.pluginManager.registerEvents(GuiListener(this), this)
+        server.pluginManager.registerEvents(PlayerChatListener(this), this)
 
         // 8. Register PlaceholderAPI Expansion
         // TODO: Register PAPI expansion if PlaceholderAPI is enabled

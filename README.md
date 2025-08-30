@@ -5,9 +5,11 @@ A modern, GUI-based player contract system for Spigot/Paper/Folia servers.
 ## Features
 
 - **Player-Made Contracts**: Players can create contracts requesting specific items from other players.
-- **Escrow System**: Contract rewards (money via Vault or items) are held securely in escrow until the contract is completed.
-- **GUI-Based Workflow**: Most interactions are handled through intuitive graphical menus.
-- **Command-Based Shortcuts**: All major actions can also be performed via commands with full tab-completion.
+- **Money-Based Economy**: All contracts use Vault for monetary rewards. Item-based rewards are not supported.
+- **Two Ways to Create**:
+    - **GUI-Based Creation**: An interactive, chat-based prompt system guides players through creating a contract.
+    - **Command-Based Creation**: A quick command allows for fast contract creation without needing to navigate menus.
+- **GUI-Based Workflow**: Most interactions are handled through intuitive graphical menus with full pagination.
 - **Delivery System**: Contractors deliver items to a virtual inbox for the contract owner to accept or reject.
 - **Claim Box**: A safe place for players to retrieve returned items from cancelled or rejected contracts.
 - **Persistence**: All data is saved in a local SQLite database.
@@ -18,8 +20,10 @@ A modern, GUI-based player contract system for Spigot/Paper/Folia servers.
 The main command is `/contract`. It has the following subcommands:
 
 - `/contract`: Opens the main contract menu.
-- `/contract create`: Opens the GUI wizard to create a new contract.
-- `/contract create item <MATERIAL> <amount> reward money <value>`: Example of the quick-create command.
+- `/contract create <item_name> <amount> <price>`: Quickly create a new contract.
+  - `item_name`: The name of the Minecraft item (e.g., `diamond_sword`).
+  - `amount`: The number of items you need.
+  - `price`: The total amount you will pay the contractor.
 - `/contract list`: Opens the list of available contracts.
 - `/contract take <id>`: Take an open contract.
 - `/contract deliver <id>`: Open the delivery GUI for a contract you have taken.
@@ -37,22 +41,20 @@ The main command is `/contract`. It has the following subcommands:
 - `karta.contract.manage`: Allows managing own contracts (e.g., cancel). (default: true)
 - `karta.contract.admin`: Allows admin commands like `/contract reload`. (default: op)
 
-## How to Test
+## How to Create a Contract
 
-1.  **Create a Contract (GUI)**:
-    - Run `/contract create`.
-    - Follow the multi-step wizard to define the requested item, quantity, and reward (either money or items).
-    - Confirm the creation.
-2.  **Take the Contract**:
-    - As a different player, run `/contract list`.
-    - Find the contract you created and click to view/take it. Or use `/contract take <id>`.
-3.  **Deliver Items**:
-    - As the second player, get the required items.
-    - Run `/contract deliver <id>` to open the delivery GUI.
-    - Place the items in the staging area and confirm.
-4.  **Accept Delivery**:
-    - As the original player, run `/contract inbox`.
-    - You should see the delivery. Click it to open the review menu.
-    - Click "Accept". The items will be transferred to you and the reward will be released to the contractor.
+There are two methods to create a contract:
+
+### 1. GUI Method (Recommended for new users)
+- Run `/contract` to open the main menu.
+- Click on the "Create Contract" button (the Anvil).
+- The GUI will close, and you will be prompted in chat.
+- Simply type your answers for the item name, amount, and price as requested.
+- If you make a mistake, you can type `cancel` at any time.
+- Once complete, the contract will be created, and the main menu will re-open.
+
+### 2. Command Method (For advanced users)
+- Use the command `/contract create <item_name> <amount> <price>`.
+- For example: `/contract create cobblestone 256 100.50` will create a contract asking for 256 cobblestone for a price of $100.50.
 
 This covers the primary workflow of the plugin.

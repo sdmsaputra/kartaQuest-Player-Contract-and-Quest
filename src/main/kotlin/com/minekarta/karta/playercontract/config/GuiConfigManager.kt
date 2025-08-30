@@ -9,6 +9,8 @@ import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.ItemStack
 import java.io.File
 
+data class GuiButton(val slot: Int, val item: ItemStack)
+
 class GuiConfigManager(private val plugin: KartaPlayerContract) {
 
     private lateinit var guiConfig: FileConfiguration
@@ -37,28 +39,37 @@ class GuiConfigManager(private val plugin: KartaPlayerContract) {
         return lore.map { MiniMessage.miniMessage().deserialize("<italic:false>$it") }
     }
 
-    fun getTitle(path: String, default: String): Component {
-        val title = guiConfig.getString(path, default)!!
+    fun getTitle(path: String, default: String, vararg placeholders: Pair<String, String>): Component {
+        var title = guiConfig.getString(path, default)!!
+        for ((key, value) in placeholders) {
+            title = title.replace("<$key>", value, ignoreCase = true)
+        }
         return deserialize(title)
     }
 
     fun getSize(path: String, default: Int): Int = guiConfig.getInt(path, default)
+
+    fun getSlots(path: String): List<Int> = guiConfig.getIntegerList(path)
 
     fun getMainMenuTitle(): Component = getTitle("main-menu.title", "<blue>Main Menu")
 
     fun getMainMenuSize(): Int = getSize("main-menu.size", 54)
 
     fun getButtonItem(path: String, vararg placeholders: Pair<String, String>): ItemStack {
-        val materialName = guiConfig.getString("$path.item.material", "STONE")!!
-        val material = Material.matchMaterial(materialName) ?: Material.STONE
-        val customModelData = guiConfig.getInt("$path.item.custom_model_data", 0)
+        // Inherit from common buttons if applicable
+        val commonButtonName = guiConfig.getString("$path.inherit")
+        val finalPath = if (commonButtonName != null) "common-buttons.$commonButtonName" else path
 
-        var name = guiConfig.getString("$path.name", " ")!!
-        var lore = guiConfig.getStringList("$path.lore")
+        val materialName = guiConfig.getString("$finalPath.material", "STONE")!!
+        val material = Material.matchMaterial(materialName) ?: Material.STONE
+        val customModelData = guiConfig.getInt("$finalPath.custom_model_data", 0)
+
+        var name = guiConfig.getString("$finalPath.name", " ")!!
+        var lore = guiConfig.getStringList("$finalPath.lore")
 
         for ((key, value) in placeholders) {
-            name = name.replace("<$key>", value)
-            lore = lore.map { it.replace("<$key>", value) }
+            name = name.replace("<$key>", value, ignoreCase = true)
+            lore = lore.map { it.replace("<$key>", value, ignoreCase = true) }
         }
 
         val item = ItemStack(material)
@@ -72,16 +83,21 @@ class GuiConfigManager(private val plugin: KartaPlayerContract) {
         return item
     }
 
-    fun getButtonSlot(path: String): Int = guiConfig.getInt("$path.slot", 0)
+    fun getButton(path: String, vararg placeholders: Pair<String, String>): GuiButton {
+        val slot = guiConfig.getInt("$path.slot")
+        val item = getButtonItem(path, *placeholders)
+        return GuiButton(slot, item)
+    }
 
     fun getFillerItem(): ItemStack {
-        val materialName = guiConfig.getString("main-menu.decoration.border-pane.item.material", "GRAY_STAINED_GLASS_PANE")!!
+        val path = "main-menu.filler"
+        val materialName = guiConfig.getString("$path.material", "GRAY_STAINED_GLASS_PANE")!!
         val material = Material.matchMaterial(materialName) ?: Material.GRAY_STAINED_GLASS_PANE
-        val name = guiConfig.getString("main-menu.decoration.border-pane.name", " ")!!
+        val name = guiConfig.getString("$path.name", " ")!!
 
         val item = ItemStack(material)
         val meta = item.itemMeta
-        meta.displayName(MiniMessage.miniMessage().deserialize(name))
+        meta.displayName(deserialize(name))
         item.itemMeta = meta
         return item
     }
