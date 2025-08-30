@@ -40,9 +40,29 @@ main-menu:
       name: "<green>My Statistics"
       lore:
         - "<gray>View your personal contract stats."
+    create-contract:
+      slot: 40
+      material: ANVIL
+      name: "<green>Create Contract"
+      lore:
+        - "<gray>Create a new contract"
+        - "<gray>using a guided process."
   filler:
     material: GRAY_STAINED_GLASS_PANE
     name: " "
+
+# Common buttons that can be reused across different GUIs
+common-buttons:
+  back:
+    material: ARROW
+    name: "<gray>Back"
+    lore:
+      - "<gray>Return to the previous menu."
+  close:
+    material: BARRIER
+    name: "<red>Close"
+    lore:
+      - "<gray>Close this menu."
 
 contract-list:
   title: "<blue>Contract List <gray>(Page <page>/<max_pages>)"
@@ -53,6 +73,8 @@ contract-list:
     previous_page: { slot: 45, material: ARROW, name: "<gray>Previous Page" }
     next_page: { slot: 53, material: ARROW, name: "<gray>Next Page" }
     filter: { slot: 48, material: HOPPER, name: "<yellow>Filter" }
+    back: { slot: 49 } # Inherits from common-buttons
+    close: { slot: 50 } # Inherits from common-buttons
   contract_item:
     material: PAPER
     name: "<gold>Request: <aqua><item_name> x<amount>"
@@ -62,22 +84,6 @@ contract-list:
       - "<gray>Expires: <white><time_left>"
       - ""
       - "<green>Click to view!"
-
-create-wizard-item:
-  title: "<blue>Create - Step 1: Item"
-  size: 54
-  staging_slot: 22
-  buttons:
-    confirm: { slot: 49, material: LIME_STAINED_GLASS_PANE, name: "<green>Confirm Item" }
-    cancel: { slot: 48, material: RED_STAINED_GLASS_PANE, name: "<red>Cancel" }
-  info_item:
-    material: BOOK
-    slot: 13
-    name: "<yellow>Instructions"
-    lore:
-      - "<gray>Place a single example of the item"
-      - "<gray>you want to request into the empty slot."
-      - "<gray>The amount will be set in the next step."
 
 delivery-staging:
   title: "<blue>Deliver Items for Contract"

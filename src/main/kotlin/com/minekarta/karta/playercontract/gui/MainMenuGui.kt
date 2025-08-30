@@ -38,6 +38,13 @@ class MainMenuGui(
             StatsGui(plugin, player, guiConfig, plugin.playerStatsService).open()
         }
 
+        // Create Contract Button
+        val createContractPath = "main-menu.buttons.create-contract"
+        setItem(guiConfig.getButtonSlot(createContractPath), guiConfig.getButtonItem(createContractPath)) {
+            player.closeInventory()
+            plugin.chatInputManager.startContractCreation(player)
+        }
+
         // --- Profile Header ---
         // This will require fetching player stats asynchronously. For now, it's a placeholder.
         val profileHeaderPath = "main-menu.buttons.profile-header"

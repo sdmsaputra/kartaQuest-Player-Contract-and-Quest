@@ -1,5 +1,6 @@
 package com.minekarta.karta.playercontract.gui
 
+import com.minekarta.karta.playercontract.KartaPlayerContract
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -9,7 +10,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 /**
  * A centralized listener for all GUI interactions.
  */
-class GuiListener(private val wizardManager: CreateWizardManager) : Listener {
+class GuiListener(private val plugin: KartaPlayerContract) : Listener {
 
     @EventHandler
     fun onInventoryClick(event: InventoryClickEvent) {
@@ -27,14 +28,6 @@ class GuiListener(private val wizardManager: CreateWizardManager) : Listener {
         val holder = event.inventory.holder
         if (holder is BaseGui) {
             holder.handleClose(event)
-
-            // If a player closes a wizard GUI, we should probably cancel the wizard process
-            // to prevent them from getting stuck in a state.
-            if (holder is CreateWizardStep1_ItemGui) { // TODO: Add other wizard steps here
-                wizardManager.getState(event.player as Player)?.let {
-                    wizardManager.cancelWizard(event.player as Player)
-                }
-            }
         }
     }
 }

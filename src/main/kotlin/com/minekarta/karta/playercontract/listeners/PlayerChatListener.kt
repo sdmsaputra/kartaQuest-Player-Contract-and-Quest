@@ -1,24 +1,29 @@
 package com.minekarta.karta.playercontract.listeners
 
+import com.minekarta.karta.playercontract.KartaPlayerContract
 import com.minekarta.karta.playercontract.util.ChatInputManager
 import io.papermc.paper.event.player.AsyncChatEvent
-import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 
-class PlayerChatListener(private val chatInputManager: ChatInputManager) : Listener {
+class PlayerChatListener(private val plugin: KartaPlayerContract) : Listener {
 
     @EventHandler
     fun onPlayerChat(event: AsyncChatEvent) {
         val player = event.player
-        if (chatInputManager.hasPendingInput(player)) {
+        if (plugin.chatInputManager.hasPendingInput(player)) {
             // This player has a pending chat input request.
             event.isCancelled = true
 
-            // Pass the message to the manager.
-            // We need to do this on the main thread if the callback touches Bukkit API.
-            val message = Component.textOfChildren(event.message()).content()
-            chatInputManager.handleInput(player, message)
+            // Extract plain text from the message component
+            val message = PlainTextComponentSerializer.plainText().serialize(event.message())
+
+            // Pass the message to the manager on the main server thread, as it will likely
+            // interact with Bukkit API (sending messages, opening GUIs, etc.)
+            plugin.scheduler.runOnMainThread(player) {
+                plugin.chatInputManager.handleInput(player, message)
+            }
         }
     }
 }

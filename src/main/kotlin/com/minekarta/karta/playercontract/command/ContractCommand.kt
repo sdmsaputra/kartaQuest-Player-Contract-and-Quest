@@ -2,7 +2,9 @@ package com.minekarta.karta.playercontract.command
 
 import com.minekarta.karta.playercontract.KartaPlayerContract
 import com.minekarta.karta.playercontract.config.MessageManager
+import com.minekarta.karta.playercontract.domain.Contract
 import com.minekarta.karta.playercontract.gui.*
+import com.minekarta.karta.playercontract.service.ContractService
 import com.minekarta.karta.playercontract.util.Result
 import org.bukkit.Material
 import org.bukkit.command.Command
@@ -10,14 +12,28 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.util.StringUtil
+import java.math.BigDecimal
+import java.time.Instant
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 class ContractCommand(
     private val plugin: KartaPlayerContract,
     private val messageManager: MessageManager,
-    private val wizardManager: CreateWizardManager
+    private val contractService: ContractService
 ) : CommandExecutor, TabCompleter {
+
+    private val nonSurvivalItems = setOf(
+        Material.BEDROCK, Material.BARRIER, Material.LIGHT, Material.COMMAND_BLOCK,
+        Material.CHAIN_COMMAND_BLOCK, Material.REPEATING_COMMAND_BLOCK, Material.STRUCTURE_BLOCK,
+        Material.STRUCTURE_VOID, Material.JIGSAW, Material.DEBUG_STICK, Material.KNOWLEDGE_BOOK,
+        Material.PLAYER_HEAD, Material.SPAWNER, Material.FARMLAND, Material.DIRT_PATH,
+        Material.END_PORTAL_FRAME, Material.END_PORTAL, Material.NETHER_PORTAL,
+        Material.ATTACHED_MELON_STEM, Material.ATTACHED_PUMPKIN_STEM, Material.PISTON_HEAD,
+        Material.MOVING_PISTON, Material.PETRIFIED_OAK_SLAB
+    )
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) {
@@ -31,7 +47,7 @@ class ContractCommand(
         }
 
         when (args[0].lowercase()) {
-            "create" -> handleCreate(sender, args.drop(1))
+            "create" -> handleCreate(sender, args.drop(1).toTypedArray())
             "list" -> ContractListGui(plugin, sender, plugin.guiConfigManager, plugin.contractService).open()
             "take" -> handleTake(sender, args.getOrNull(1))
             "deliver" -> handleDeliver(sender, args.getOrNull(1))
@@ -47,17 +63,65 @@ class ContractCommand(
         return true
     }
 
-    private fun handleCreate(player: Player, args: List<String>) {
+    private fun handleCreate(player: Player, args: Array<String>) {
         if (!player.hasPermission("karta.contract.create")) {
             player.sendMessage(messageManager.getPrefixedMessage("command.no-permission"))
             return
         }
-        if (args.isEmpty()) {
-            wizardManager.startWizard(player)
-        } else {
-            // TODO: Implement quick-create command parsing
-            // e.g. /contract create item DIAMOND 10 reward money 500
-            player.sendMessage(messageManager.getPrefixedMessage("command.not-implemented"))
+
+        if (args.size != 3) {
+            player.sendMessage(messageManager.getPrefixedMessage("command.create-usage"))
+            return
+        }
+
+        val materialName = args[0].uppercase()
+        val material = Material.matchMaterial(materialName)
+        if (material == null || !material.isItem || nonSurvivalItems.contains(material)) {
+            player.sendMessage(messageManager.getPrefixedMessage("command.invalid-material", "material" to materialName))
+            return
+        }
+
+        val amount = args[1].toIntOrNull()
+        if (amount == null || amount <= 0) {
+            player.sendMessage(messageManager.getPrefixedMessage("command.invalid-amount", "amount" to args[1]))
+            return
+        }
+
+        val price = args[2].toBigDecimalOrNull()
+        if (price == null || price <= BigDecimal.ZERO) {
+            player.sendMessage(messageManager.getPrefixedMessage("command.invalid-price", "price" to args[2]))
+            return
+        }
+
+        // Create a dummy item stack for serialization. We only care about the material type.
+        val requestedItem = ItemStack(material)
+
+        val contract = Contract(
+            id = UUID.randomUUID(),
+            ownerId = player.uniqueId,
+            ownerName = player.name,
+            requestedItem = requestedItem,
+            requestedAmount = amount,
+            rewardMoney = price,
+            rewardItems = emptyList(), // No item rewards
+            createdAt = Instant.now(),
+            expiresAt = Instant.now().plusSeconds(TimeUnit.DAYS.toSeconds(plugin.config.getLong("contract_defaults.default_expiry_days", 7))),
+            state = com.minekarta.karta.playercontract.domain.ContractState.AVAILABLE
+        )
+
+        contractService.createContract(contract).whenComplete { result, error ->
+            plugin.scheduler.runOnMainThread(player) {
+                if (error != null) {
+                    player.sendMessage(messageManager.getPrefixedMessage("command.generic-error"))
+                    plugin.logger.warning("Error creating contract: ${error.message}")
+                    return@runOnMainThread
+                }
+                when (result) {
+                    is Result.Success -> player.sendMessage(messageManager.getPrefixedMessage("command.create-success", "id" to contract.id.toString()))
+                    is Result.Failure -> player.sendMessage(messageManager.getPrefixedMessage("command.create-failure", "reason" to result.error.toString()))
+                    null -> {}
+                }
+            }
         }
     }
 
@@ -147,35 +211,36 @@ class ContractCommand(
         alias: String,
         args: Array<out String>
     ): List<String> {
+        val completions = mutableListOf<String>()
+
         if (args.size == 1) {
             val subcommands = listOf("create", "list", "take", "deliver", "inbox", "history", "stats", "claims", "cancel")
-            val completions = StringUtil.copyPartialMatches(args[0], subcommands, mutableListOf())
+            StringUtil.copyPartialMatches(args[0], subcommands, completions)
             if (sender.hasPermission("karta.contract.admin")) {
-                completions.add("reload")
+                if ("reload".startsWith(args[0], ignoreCase = true)) {
+                    completions.add("reload")
+                }
             }
-            return completions
-        }
-
-        if (args.size == 2) {
+        } else if (args.size > 1 && args[0].equals("create", ignoreCase = true)) {
+            when (args.size) {
+                2 -> { // Suggesting item names
+                    val itemNames = Material.entries
+                        .filter { it.isItem && !nonSurvivalItems.contains(it) }
+                        .map { it.name.lowercase() }
+                    StringUtil.copyPartialMatches(args[1], itemNames, completions)
+                }
+                3 -> completions.add("<amount>") // Suggesting amount
+                4 -> completions.add("<price>")  // Suggesting price
+            }
+        } else if (args.size == 2) {
             when (args[0].lowercase()) {
                 "take", "deliver", "cancel" -> {
                     // TODO: Suggest active contract IDs
-                    return listOf("[contract_id]")
+                    completions.add("[contract_id]")
                 }
             }
         }
 
-        if (args.size > 1 && args[0].equals("create", ignoreCase = true)) {
-             // /contract create item <MATERIAL> <amount> reward <money|item> <value>
-            return when(args.size) {
-                2 -> StringUtil.copyPartialMatches(args[1], listOf("item"), mutableListOf())
-                3 -> StringUtil.copyPartialMatches(args[2], Material.entries.map { it.name }, mutableListOf())
-                5 -> StringUtil.copyPartialMatches(args[4], listOf("reward"), mutableListOf())
-                6 -> StringUtil.copyPartialMatches(args[5], listOf("money", "item"), mutableListOf())
-                else -> emptyList()
-            }
-        }
-
-        return emptyList()
+        return completions
     }
 }

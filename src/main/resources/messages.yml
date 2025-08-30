@@ -14,6 +14,13 @@ command:
   id-required: "<red>You must specify a contract ID."
   generic-error: "<red>An unexpected error occurred. Please see the console."
 
+  create-usage: "<red>Usage: /contract create <item_name> <amount> <price>"
+  invalid-material: "<red>'<material>' is not a valid or obtainable item."
+  invalid-amount: "<red>'<amount>' is not a valid amount."
+  invalid-price: "<red>'<price>' is not a valid price."
+  create-success: "<green>Successfully created contract with ID <gold><id></gold>."
+  create-failure: "<red>Could not create contract: <white><reason>"
+
   take-success: "<green>You have taken contract <gold><id></gold>."
   take-failure: "<red>Could not take contract: <white><reason>"
   cancel-success: "<green>You have cancelled contract <gold><id></gold>."
@@ -50,6 +57,14 @@ wizard:
   error:
     item_not_set: "<red>You must set an item first."
     no_reward_item: "<red>You must provide at least one reward item."
+
+chat_input:
+  prompt_item_name: "<yellow>Please type the name of the item you want to request. Type 'cancel' to exit."
+  item_name_set: "<green>Item set to <white><item></white>."
+  prompt_amount: "<yellow>Please type the total amount you need. Type 'cancel' to exit."
+  amount_set: "<green>Amount set to <white><amount></white>."
+  prompt_price: "<yellow>Please type the total price you will pay. Type 'cancel' to exit."
+  cancelled: "<red>Contract creation cancelled."
 
 gui:
   # Sound effects for GUI interactions

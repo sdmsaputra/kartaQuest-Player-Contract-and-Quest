@@ -26,6 +26,23 @@ class SQLiteContractRepository(private val dbManager: DatabaseManager) : Contrac
         }, dbManager.executor)
     }
 
+    override fun countByState(state: ContractState): CompletableFuture<Int> {
+        return CompletableFuture.supplyAsync({
+            val sql = "SELECT COUNT(*) FROM contracts WHERE state = ?"
+            dbManager.getConnection().use { conn ->
+                conn.prepareStatement(sql).use { stmt ->
+                    stmt.setString(1, state.name)
+                    stmt.executeQuery().use { rs ->
+                        if (rs.next()) {
+                            return@supplyAsync rs.getInt(1)
+                        }
+                        return@supplyAsync 0
+                    }
+                }
+            }
+        }, dbManager.executor)
+    }
+
     override fun findByState(state: ContractState): CompletableFuture<List<Contract>> {
         return CompletableFuture.supplyAsync({
             val contracts = mutableListOf<Contract>()
