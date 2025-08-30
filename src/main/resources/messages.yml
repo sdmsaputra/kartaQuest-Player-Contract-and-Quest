@@ -30,3 +30,7 @@ gui:
   delivery-inbox-title: "<blue>Delivery Inbox"
   history-title: "<blue>Contract History"
   statistics-title: "<blue>Player Statistics"
+
+  # Sound effects for GUI interactions
+  open-sound: "BLOCK_CHEST_OPEN"
+  click-sound: "UI_BUTTON_CLICK"

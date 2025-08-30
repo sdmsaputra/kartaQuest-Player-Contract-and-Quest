@@ -97,11 +97,13 @@ abstract class BaseGui(
 
     private fun playSound(soundKey: String) {
         val soundName = plugin.messageManager.getRawMessage(soundKey)
-        try {
-            val sound = Sound.valueOf(soundName.uppercase())
-            player.playSound(player.location, sound, 1.0f, 1.0f)
-        } catch (e: IllegalArgumentException) {
-            plugin.logger.warning("Invalid sound name in messages.yml: $soundName")
+        if (soundName.isNotBlank() && !soundName.startsWith("Message not found:")) {
+            try {
+                val sound = Sound.valueOf(soundName.uppercase())
+                player.playSound(player.location, sound, 1.0f, 1.0f)
+            } catch (e: IllegalArgumentException) {
+                plugin.logger.warning("Invalid sound name in messages.yml: $soundName")
+            }
         }
     }
 }
