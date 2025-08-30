@@ -2,6 +2,7 @@ package com.minekarta.karta.playercontract.command
 
 import com.minekarta.karta.playercontract.KartaPlayerContract
 import com.minekarta.karta.playercontract.config.MessageManager
+import com.minekarta.karta.playercontract.util.Result
 import com.minekarta.karta.playercontract.gui.ContractListGui
 import com.minekarta.karta.playercontract.gui.CreateWizardManager
 import com.minekarta.karta.playercontract.gui.MainMenuGui
@@ -27,13 +28,13 @@ class ContractCommand(
         }
 
         if (args.isEmpty()) {
-            MainMenuGui(plugin, sender).open()
+            MainMenuGui(plugin, sender, plugin.guiConfigManager).open()
             return true
         }
 
         when (args[0].lowercase()) {
             "create" -> handleCreate(sender, args.drop(1))
-            "list" -> ContractListGui(plugin, sender).open()
+            "list" -> ContractListGui(plugin, sender, plugin.guiConfigManager, plugin.contractService).open()
             "take" -> handleTake(sender, args.getOrNull(1))
             "deliver" -> handleDeliver(sender, args.getOrNull(1))
             "inbox" -> { /* TODO: Open DeliveryInboxGui */ }
@@ -68,7 +69,7 @@ class ContractCommand(
             return
         }
         val contractId = UUID.fromString(contractIdStr)
-        plugin.contractService.takeContract(player.uniqueId, contractId).whenComplete { result, error ->
+        plugin.contractService.takeContract(player.uniqueId, contractId).whenComplete { result: Result<Unit, Error>?, error: Throwable? ->
             // TODO: Handle result and send messages
         }
     }
@@ -88,7 +89,7 @@ class ContractCommand(
             return
         }
         val contractId = UUID.fromString(contractIdStr)
-        plugin.contractService.cancelContract(player.uniqueId, contractId).whenComplete { result, error ->
+        plugin.contractService.cancelContract(player.uniqueId, contractId).whenComplete { result: Result<Unit, Error>?, error: Throwable? ->
             // TODO: Handle result and send messages
         }
     }

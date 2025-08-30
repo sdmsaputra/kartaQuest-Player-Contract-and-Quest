@@ -2,16 +2,16 @@ package com.minekarta.karta.playercontract.service
 
 import com.minekarta.karta.playercontract.domain.Contract
 import com.minekarta.karta.playercontract.domain.ContractState
-import com.minekarta.karta.playercontract.domain.Reward
-import com.minekarta.karta.playercontract.events.*
+import com.minekarta.karta.playercontract.events.PlayerContractCreatedEvent
+import com.minekarta.karta.playercontract.events.PlayerContractTakenEvent
 import com.minekarta.karta.playercontract.persistence.ContractRepository
+import com.minekarta.karta.playercontract.util.FoliaScheduler
+import com.minekarta.karta.playercontract.util.Result
 import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.CompletableFuture
-
-import com.minekarta.karta.playercontract.util.FoliaScheduler
 
 class ContractServiceImpl(
     private val contractRepository: ContractRepository,
@@ -19,24 +19,22 @@ class ContractServiceImpl(
     private val scheduler: FoliaScheduler
 ) : ContractService {
 
-    override fun createContract(contract: Contract): CompletableFuture<Contract> {
-        // Run the whole creation process asynchronously
-    override fun createContract(contract: Contract): CompletableFuture<Contract> {
+    override fun createContract(contract: Contract): CompletableFuture<Result<Contract, Error>> {
         val player = Bukkit.getPlayer(contract.issuerUUID)
-            ?: return CompletableFuture.failedFuture(IllegalStateException("Player must be online to create a contract."))
+        if (player == null) {
+            return CompletableFuture.completedFuture(Result.failure(Error("Player must be online to create a contract.")))
+        }
 
-        // 1. Fire the event on the main thread and get the result.
         val event = PlayerContractCreatedEvent(contract.id, contract.issuerUUID)
         return scheduler.runOnMainThread(player) {
             Bukkit.getPluginManager().callEvent(event)
-        }.thenComposeAsync { // This block runs async after the event is fired
+        }.thenComposeAsync {
             if (event.isCancelled) {
-                return@thenComposeAsync CompletableFuture.failedFuture<Contract>(
-                    IllegalStateException("Contract creation cancelled by another plugin.")
+                return@thenComposeAsync CompletableFuture.completedFuture(
+                    Result.failure(Error("Contract creation cancelled by another plugin."))
                 )
             }
 
-            // 2. Hold the reward in escrow. This is already an async operation.
             val escrowFuture: CompletableFuture<Boolean> = when {
                 contract.reward.money != null && contract.reward.money > 0 ->
                     escrowService.holdMoney(contract.issuerUUID, contract.reward.money)
@@ -45,14 +43,19 @@ class ContractServiceImpl(
                 else -> CompletableFuture.completedFuture(true) // No reward
             }
 
-            val escrowSuccess = escrowFuture.join() // We are in an async block, so .join() is safe here.
-            if (!escrowSuccess) {
-                throw IllegalStateException("Failed to secure contract reward in escrow.")
+            escrowFuture.thenCompose { success ->
+                if (success) {
+                    contractRepository.save(contract)
+                        .thenApply<Result<Contract, Error>> { Result.success(contract) }
+                } else {
+                    CompletableFuture.completedFuture(
+                        Result.failure(Error("Failed to secure contract reward in escrow."))
+                    )
+                }
             }
-
-            // 3. Save contract to database (already returns a future)
-            contractRepository.save(contract).thenApply { contract }
-        }.thenCompose { it } // Flatten the CompletableFuture<CompletableFuture<Contract>>
+        }.exceptionally { ex ->
+            Result.failure(Error("An unexpected error occurred: ${ex.message}"))
+        }
     }
 
     override fun listOpenContracts(page: Int, pageSize: Int): CompletableFuture<List<Contract>> {

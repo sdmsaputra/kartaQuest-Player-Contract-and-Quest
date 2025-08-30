@@ -17,14 +17,15 @@ class CreateWizardStep2_QuantityGui(
         fill(createFillerItem())
 
         val state = wizardManager.getState(player)
-        if (state?.requestItem == null) {
+        val requestItem = state?.requestItem
+        if (requestItem == null) {
             player.closeInventory()
             player.sendMessage(Component.text("Error: Item not set. Please start over.", NamedTextColor.RED))
             return
         }
 
         // Display the selected item
-        val itemPreview = state.requestItem.clone()
+        val itemPreview = requestItem.clone()
         itemPreview.itemMeta = itemPreview.itemMeta.also {
             it.displayName(Component.text("Requesting Item", NamedTextColor.YELLOW))
         }
