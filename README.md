@@ -1,56 +1,58 @@
-# Karta PlayerContract
+# KartaPlayerContract
 
-Karta PlayerContract is a modern Minecraft plugin that provides a complete, GUI-based system for players to create and fulfill contracts with each other. It's designed to be intuitive, easy to use, and a powerful tool for building a server economy.
+A modern, GUI-based player contract system for Spigot/Paper/Folia servers.
 
 ## Features
 
-- **Fully GUI-Based:** No more clunky commands. Everything is handled through a clean, interactive, and easy-to-understand graphical interface.
-- **Main Menu:** A central hub (`/contract`) to access all features of the plugin.
-- **Contract List:** Browse all available contracts, see what they require, and accept them with a single click.
-- **Reward Inventory:** A personal inventory to see all your pending rewards from completed contracts. Claim them whenever you're ready!
-- **Contract History:** Look back on all the contracts you've accepted, completed, or failed.
-- **Player Statistics:** A dedicated screen to view your personal contract-related stats, like completion rate, total earnings, and more.
-- **Admin Features:** Simple commands for admins to reload the plugin or open the contract menu for other players.
-- **Highly Configurable:** Customize all GUIs, messages, and sounds to fit your server's theme.
-- **PlaceholderAPI Support:** (Coming Soon) Integrate contract data into other plugins.
-- **Modern & Performant:** Built with Kotlin and asynchronous database operations to ensure minimal impact on server performance.
+- **Player-Made Contracts**: Players can create contracts requesting specific items from other players.
+- **Escrow System**: Contract rewards (money via Vault or items) are held securely in escrow until the contract is completed.
+- **GUI-Based Workflow**: Most interactions are handled through intuitive graphical menus.
+- **Command-Based Shortcuts**: All major actions can also be performed via commands with full tab-completion.
+- **Delivery System**: Contractors deliver items to a virtual inbox for the contract owner to accept or reject.
+- **Claim Box**: A safe place for players to retrieve returned items from cancelled or rejected contracts.
+- **Persistence**: All data is saved in a local SQLite database.
+- **Async & Folia-Safe**: All database and I/O operations are performed asynchronously to prevent server lag.
 
 ## Commands
 
-The command system is designed for simplicity and ease of use.
+The main command is `/contract`. It has the following subcommands:
 
-**Main Command:** `/contract` (Aliases: `/playercontract`, `/pc`)
-
-| Subcommand | Description | Permission |
-| --- | --- | --- |
-| (no subcommand) | Opens the main contract menu GUI. | `karta.contract.open` |
-| `list` | Opens the Contract List GUI directly. | `karta.contract.open` |
-| `inventory` | Opens your personal Reward Inventory. | `karta.contract.inventory` |
-| `history` | Opens your Contract History. | `karta.contract.history` |
-| `stats` | Opens your Player Statistics. | `karta.contract.stats` |
-| `help` | Shows a list of all available commands. | (none) |
-| `reload` | Reloads the plugin configuration. | `karta.contract.admin.reload` |
-| `open <player>` | Opens the main contract menu for another player. | `karta.contract.admin.open` |
+- `/contract`: Opens the main contract menu.
+- `/contract create`: Opens the GUI wizard to create a new contract.
+- `/contract create item <MATERIAL> <amount> reward money <value>`: Example of the quick-create command.
+- `/contract list`: Opens the list of available contracts.
+- `/contract take <id>`: Take an open contract.
+- `/contract deliver <id>`: Open the delivery GUI for a contract you have taken.
+- `/contract inbox`: View deliveries waiting for your approval.
+- `/contract claims`: Open your claim box to retrieve returned items.
+- `/contract cancel <id>`: Cancel a contract you have created.
+- `/contract history`: View your contract history.
+- `/contract stats`: View your statistics.
+- `/contract reload`: (Admin) Reloads the plugin's configuration files.
 
 ## Permissions
 
-Permissions are straightforward and grant access to the features players need.
+- `karta.contract.create`: Allows creating contracts. (default: true)
+- `karta.contract.take`: Allows taking contracts. (default: true)
+- `karta.contract.manage`: Allows managing own contracts (e.g., cancel). (default: true)
+- `karta.contract.admin`: Allows admin commands like `/contract reload`. (default: op)
 
-| Permission | Description | Default |
-| --- | --- | --- |
-| `karta.contract.user` | A parent permission that grants all user-level permissions. | `true` |
-| `karta.contract.open` | Allows opening the main contract menu and contract list. | `true` |
-| `karta.contract.inventory` | Allows opening the reward inventory. | `true` |
-| `karta.contract.history` | Allows opening the contract history. | `true` |
-| `karta.contract.stats` | Allows opening the player statistics. | `true` |
-| `karta.contract.admin` | A parent permission for all admin commands. | `op` |
-| `karta.contract.admin.reload` | Allows reloading the plugin configuration. | `op` |
-| `karta.contract.admin.open` | Allows opening the contract menu for other players. | `op` |
+## How to Test
 
-## Configuration
+1.  **Create a Contract (GUI)**:
+    - Run `/contract create`.
+    - Follow the multi-step wizard to define the requested item, quantity, and reward (either money or items).
+    - Confirm the creation.
+2.  **Take the Contract**:
+    - As a different player, run `/contract list`.
+    - Find the contract you created and click to view/take it. Or use `/contract take <id>`.
+3.  **Deliver Items**:
+    - As the second player, get the required items.
+    - Run `/contract deliver <id>` to open the delivery GUI.
+    - Place the items in the staging area and confirm.
+4.  **Accept Delivery**:
+    - As the original player, run `/contract inbox`.
+    - You should see the delivery. Click it to open the review menu.
+    - Click "Accept". The items will be transferred to you and the reward will be released to the contractor.
 
-The plugin is highly configurable through the files located in the `/plugins/KartaPlayerContract/` directory.
-
-- `config.yml`: Main plugin configuration.
-- `gui.yml`: Configure all aspects of the GUIs, including titles, sizes, items, and slots.
-- `message.yml`: Customize all messages and sounds used by the plugin.
+This covers the primary workflow of the plugin.

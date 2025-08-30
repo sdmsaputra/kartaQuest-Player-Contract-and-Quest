@@ -1,164 +1,123 @@
 # KartaPlayerContract GUI Configuration
 # All 'name' and 'lore' fields support MiniMessage format.
-# Materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
-# For custom models, use the format: { material: "PAPER", custom_model_data: 12345 }
+# Slots are 0-indexed. Size must be a multiple of 9.
 
-main-menu:
-  title: "<blue>Contract Main Menu"
+main:
+  title: "<blue>Contracts"
   size: 54
   buttons:
-    contract-list:
-      item: { material: "WRITABLE_BOOK" }
-      slot: 20
+    create:
+      slot: 11
+      material: PAPER
+      name: "<green>Create Contract"
+      lore:
+        - "<gray>Design a new contract for"
+        - "<gray>other players to complete."
+    list:
+      slot: 15
+      material: BOOK
       name: "<aqua>Contract List"
       lore:
-        - "<gray>View all available contracts"
-        - "<gray>and those you are working on."
-        - ""
-        - "<yellow>Click to open!"
-    inventory:
-      item: { material: "CHEST" }
-      slot: 22
-      name: "<gold>Reward Inventory"
+        - "<gray>View all publicly available contracts."
+    inbox:
+      slot: 21
+      material: CHEST
+      name: "<gold>Delivery Inbox"
       lore:
-        - "<gray>View and claim rewards"
-        - "<gray>from your completed contracts."
-        - ""
-        - "<yellow>Click to open!"
+        - "<gray>Review deliveries for your contracts."
+    my:
+      slot: 23
+      material: PLAYER_HEAD
+      name: "<white>My Contracts"
+      lore:
+        - "<gray>Manage your created and taken contracts."
     history:
-      item: { material: "BOOK" }
-      slot: 24
-      name: "<yellow>Contract History"
+      slot: 29
+      material: BOOKSHELF
+      name: "<yellow>History"
       lore:
-        - "<gray>View a history of all contracts"
-        - "<gray>you have been involved in."
-        - ""
-        - "<yellow>Click to open!"
-    statistics:
-      item: { material: "NETHER_STAR" }
-      slot: 31
-      name: "<green>Player Statistics"
+        - "<gray>View your past contracts."
+    stats:
+      slot: 33
+      material: NETHER_STAR
+      name: "<green>Statistics"
       lore:
-        - "<gray>View your personal statistics"
-        - "<gray>related to contracts."
-        - ""
-        - "<yellow>Click to open!"
-    profile-header:
-      item: { material: "PLAYER_HEAD" } # This will be replaced by the player's actual head
-      slot: 4
-      name: "<green><player_name>"
-      lore:
-        - "<gray>Active Contracts: <white><active_contracts>"
-        - "<gray>Completed Contracts: <white><completed_contracts>"
-        - "<gray>Total Earned: <gold><total_earned>"
-  decoration:
-    border-pane:
-      item: { material: "GRAY_STAINED_GLASS_PANE" }
-      name: " "
+        - "<gray>View your contract stats."
+    close:
+      slot: 49
+      material: BARRIER
+      name: "<red>Close"
+  filler:
+    material: GRAY_STAINED_GLASS_PANE
+    name: " "
 
 contract-list:
-  title: "<blue>Contract List <gray>(Page: <page>/<total_pages>)"
+  title: "<blue>Contract List <gray>(Page <page>/<max_pages>)"
   size: 54
-  filter-buttons:
-    all:
-      item: { material: "BOOK" }
-      name: "<aqua>Filter: All"
-    available:
-      item: { material: "EMERALD" }
-      name: "<green>Filter: Available"
-    in-progress:
-      item: { material: "DIAMOND_SWORD" }
-      name: "<yellow>Filter: In Progress"
-  sort-buttons:
-    newest:
-      item: { material: "CLOCK" }
-      name: "<aqua>Sort: Newest"
-    highest-reward:
-      item: { material: "GOLD_INGOT" }
-      name: "<green>Sort: Highest Reward"
-  navigation:
-    next-page:
-      item: { material: "ARROW" }
-      name: "<green>Next Page"
-    previous-page:
-      item: { material: "ARROW" }
-      name: "<red>Previous Page"
-  contract-item:
-    # Placeholders: <title>, <issuer>, <reward>, <time_left>, <status>
-    name: "<gold><title>"
+  # The slots where contract items will be placed
+  item_slots: [10,11,12,13,14,15,16, 19,20,21,22,23,24,25, 28,29,30,31,32,33,34]
+  buttons:
+    previous_page: { slot: 45, material: ARROW, name: "<gray>Previous Page" }
+    next_page: { slot: 53, material: ARROW, name: "<gray>Next Page" }
+    filter: { slot: 48, material: HOPPER, name: "<yellow>Filter" }
+  contract_item:
+    material: PAPER
+    name: "<gold>Request: <aqua><item_name> x<amount>"
     lore:
-      - "<gray>By: <white><issuer>"
-      - "<gray>Reward: <yellow><reward>"
-      - "<gray>Time Left: <white><time_left>"
+      - "<gray>Owner: <white><owner_name>"
+      - "<gray>Reward: <yellow><reward_preview>"
+      - "<gray>Expires: <white><time_left>"
       - ""
-      - "<green>Status: <status>"
-      - "<yellow>Click for details!"
+      - "<green>Click to view!"
 
-inventory:
-  title: "<gold>Reward Inventory"
+create-wizard-item:
+  title: "<blue>Create - Step 1: Item"
   size: 54
-  claimable-item:
-    # Placeholders: <contract_name>, <reward_description>
-    name: "<green>Claim Reward"
+  staging_slot: 22
+  buttons:
+    confirm: { slot: 49, material: LIME_STAINED_GLASS_PANE, name: "<green>Confirm Item" }
+    cancel: { slot: 48, material: RED_STAINED_GLASS_PANE, name: "<red>Cancel" }
+  info_item:
+    material: BOOK
+    slot: 13
+    name: "<yellow>Instructions"
     lore:
-      - "<gray>From Contract: <white><contract_name>"
-      - "<gray>Reward: <yellow><reward_description>"
+      - "<gray>Place a single example of the item"
+      - "<gray>you want to request into the empty slot."
+      - "<gray>The amount will be set in the next step."
+
+delivery-staging:
+  title: "<blue>Deliver Items for Contract"
+  size: 54
+  staging_slots: [12,13,14,15,16] # Example staging area
+  buttons:
+    confirm: { slot: 49, material: LIME_STAINED_GLASS_PANE, name: "<green>Confirm Delivery" }
+    cancel: { slot: 48, material: RED_STAINED_GLASS_PANE, name: "<red>Cancel" }
+
+delivery-inbox:
+  title: "<blue>Delivery Inbox"
+  size: 54
+  item_slots: [10,11,12,13,14,15,16, 19,20,21,22,23,24,25, 28,29,30,31,32,33,34]
+  delivery_item:
+    material: CHEST
+    name: "<gold>Delivery from <white><contractor_name>"
+    lore:
+      - "<gray>For contract: <white><contract_id>"
+      - "<gray>Items: <yellow><item_preview>"
       - ""
-      - "<yellow>Click to claim!"
-  claimed-item:
-    name: "<red>Reward Claimed"
-    lore:
-      - "<gray>You have already claimed this."
-  navigation:
-    next-page:
-      item: { material: "ARROW" }
-      name: "<green>Next Page"
-    previous-page:
-      item: { material: "ARROW" }
-      name: "<red>Previous Page"
+      - "<green>Click to review!"
+  buttons:
+    accept: { slot: 44, material: LIME_CONCRETE, name: "<green>Accept Delivery" }
+    reject: { slot: 46, material: RED_CONCRETE, name: "<red>Reject Delivery" }
 
-history:
-  title: "<yellow>Contract History"
+claim-box:
+  title: "<blue>Claim Box"
   size: 54
-  history-item:
-    # Placeholders: <contract_name>, <status>, <date_completed>
-    name: "<gold><contract_name>"
+  item_slots: [10,11,12,13,14,15,16, 19,20,21,22,23,24,25, 28,29,30,31,32,33,34]
+  claim_item:
+    material: CHEST_MINECART
+    name: "<gold>Package ID: <white><package_id>"
     lore:
-      - "<gray>Status: <white><status>"
-      - "<gray>Completed: <white><date_completed>"
-  navigation:
-    next-page:
-      item: { material: "ARROW" }
-      name: "<green>Next Page"
-    previous-page:
-      item: { material: "ARROW" }
-      name: "<red>Previous Page"
-
-stats:
-  title: "<green>Player Statistics"
-  size: 27
-  items:
-    total-accepted:
-      item: { material: "DIAMOND" }
-      slot: 10
-      name: "<aqua>Total Contracts Accepted"
-      lore:
-        - "<white><value>"
-    total-completed:
-      item: { material: "GOLD_INGOT" }
-      slot: 12
-      name: "<green>Total Contracts Completed"
-      lore:
-        - "<white><value>"
-    success-rate:
-      item: { material: "EMERALD" }
-      slot: 14
-      name: "<yellow>Success Rate"
-      lore:
-        - "<white><value>%"
-    total-earned:
-      item: { material: "NETHER_STAR" }
-      slot: 16
-      name: "<gold>Total Earnings"
-      lore:
-        - "<white><value>"
+      - "<gray>Contains: <yellow><item_preview>"
+      - ""
+      - "<green>Click to claim!"

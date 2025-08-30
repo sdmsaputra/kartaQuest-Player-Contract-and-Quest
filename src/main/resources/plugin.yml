@@ -13,57 +13,22 @@ softdepend:
   - Vault
   - PlaceholderAPI
 
-# Commands as per the new specification
 commands:
   contract:
-    description: Main command for KartaPlayerContract. Opens the main menu.
-    aliases: [playercontract, pc]
-    usage: "/<command> [subcommand]"
+    description: Contract system
+    usage: /contract [subcommand]
+    aliases: [pc, playercontract]
 
-# Permissions as per the new specification
 permissions:
+  karta.contract.create:
+    description: Allows a player to create new contracts.
+    default: true
+  karta.contract.take:
+    description: Allows a player to take open contracts.
+    default: true
+  karta.contract.manage:
+    description: Allows a player to manage their own contracts (cancel, etc.).
+    default: true
   karta.contract.admin:
-    description: Grants access to all admin commands.
+    description: Grants access to admin commands like reload.
     default: op
-    children:
-      karta.contract.admin.reload: true
-      karta.contract.admin.open: true
-      karta.contract.admin.give: true
-      karta.contract.admin.payout: true
-      karta.contract.admin.setstate: true
-  karta.contract.admin.reload:
-    description: Allows reloading the plugin's configuration.
-    default: op
-  karta.contract.admin.open:
-    description: Allows opening the contract menu for other players.
-    default: op
-  karta.contract.admin.give:
-    description: Allows giving a contract to a player from a template.
-    default: op
-  karta.contract.admin.payout:
-    description: Allows forcing a payout for a contract.
-    default: op
-  karta.contract.admin.setstate:
-    description: Allows changing the state of a contract.
-    default: op
-
-  karta.contract.user:
-    description: Grants access to base user features.
-    default: true # Grant all user perms by default
-    children:
-      karta.contract.open: true
-      karta.contract.history: true
-      karta.contract.stats: true
-      karta.contract.inventory: true
-  karta.contract.open:
-    description: Allows opening the contract menu.
-    default: true
-  karta.contract.history:
-    description: Allows accessing the contract history GUI.
-    default: true
-  karta.contract.stats:
-    description: Allows accessing the statistics GUI.
-    default: true
-  karta.contract.inventory:
-    description: Allows issuers to access their delivery inbox.
-    default: true
