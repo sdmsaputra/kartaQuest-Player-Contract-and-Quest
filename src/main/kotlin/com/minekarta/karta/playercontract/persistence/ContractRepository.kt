@@ -26,6 +26,15 @@ interface ContractRepository {
     fun findByState(state: ContractState): CompletableFuture<List<Contract>>
 
     /**
+     * Retrieves a paginated list of contracts in a specific state.
+     * @param state The state to filter by.
+     * @param page The page number (1-indexed).
+     * @param pageSize The number of items per page.
+     * @return A CompletableFuture that will complete with a list of contracts for the given page.
+     */
+    fun findByState(state: ContractState, page: Int, pageSize: Int): CompletableFuture<List<Contract>>
+
+    /**
      * Retrieves all contracts associated with a specific player, either as issuer or contractor.
      * @param playerUUID The UUID of the player.
      * @return A CompletableFuture that will complete with a list of contracts.

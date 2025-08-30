@@ -2,8 +2,7 @@ package com.minekarta.karta.playercontract.service
 
 import com.minekarta.karta.playercontract.domain.Contract
 import com.minekarta.karta.playercontract.domain.ContractState
-import com.minekarta.karta.playercontract.events.PlayerContractCreatedEvent
-import com.minekarta.karta.playercontract.events.PlayerContractTakenEvent
+import com.minekarta.karta.playercontract.events.*
 import com.minekarta.karta.playercontract.persistence.ContractRepository
 import com.minekarta.karta.playercontract.util.FoliaScheduler
 import com.minekarta.karta.playercontract.util.Result
@@ -59,8 +58,7 @@ class ContractServiceImpl(
     }
 
     override fun listOpenContracts(page: Int, pageSize: Int): CompletableFuture<List<Contract>> {
-        // TODO: Implement pagination in the repository layer
-        return contractRepository.findByState(ContractState.AVAILABLE)
+        return contractRepository.findByState(ContractState.AVAILABLE, page, pageSize)
     }
 
     override fun getContract(id: UUID): CompletableFuture<Contract?> {
@@ -68,58 +66,187 @@ class ContractServiceImpl(
     }
 
     override fun takeContract(playerUUID: UUID, contractId: UUID): CompletableFuture<Result<Unit, Error>> {
-        return CompletableFuture.supplyAsync {
-            // TODO: Implement atomic operation in repository
-            val contract = contractRepository.findById(contractId).join()
-                ?: return@supplyAsync Result.failure(Error("Contract not found."))
-
+        return contractRepository.findById(contractId).thenCompose { contract ->
+            if (contract == null) {
+                return@thenCompose CompletableFuture.completedFuture(Result.failure(Error("Contract not found.")))
+            }
             if (contract.state != ContractState.AVAILABLE) {
-                return@supplyAsync Result.failure(Error("Contract is not available."))
+                return@thenCompose CompletableFuture.completedFuture(Result.failure(Error("Contract is not available.")))
             }
             if (contract.issuerUUID == playerUUID) {
-                return@supplyAsync Result.failure(Error("You cannot take your own contract."))
+                return@thenCompose CompletableFuture.completedFuture(Result.failure(Error("You cannot take your own contract.")))
             }
 
             contract.contractorUUID = playerUUID
             contract.state = ContractState.IN_PROGRESS
             contract.updatedAt = Instant.now()
-            contractRepository.save(contract).join()
 
-            Bukkit.getPluginManager().callEvent(PlayerContractTakenEvent(contractId, playerUUID))
-            Result.success(Unit)
+            contractRepository.save(contract).thenApply {
+                val player = Bukkit.getPlayer(playerUUID)
+                if (player != null) {
+                    scheduler.runOnMainThread(player) {
+                        Bukkit.getPluginManager().callEvent(PlayerContractTakenEvent(contract.id, playerUUID))
+                    }
+                }
+                Result.success(Unit)
+            }
         }
     }
 
     override fun cancelContract(ownerUUID: UUID, contractId: UUID): CompletableFuture<Result<Unit, Error>> {
-        // TODO: Implement cancellation logic
-        // 1. Get contract, check owner and state
-        // 2. Return funds/items from escrow
-        // 3. Update contract state to CANCELLED
-        // 4. Fire event
-        TODO("Not yet implemented")
+        return contractRepository.findById(contractId).thenCompose { contract ->
+            if (contract == null) {
+                return@thenCompose CompletableFuture.completedFuture(Result.failure(Error("Contract not found.")))
+            }
+            if (contract.issuerUUID != ownerUUID) {
+                return@thenCompose CompletableFuture.completedFuture(Result.failure(Error("You are not the owner of this contract.")))
+            }
+            if (contract.state != ContractState.AVAILABLE) {
+                return@thenCompose CompletableFuture.completedFuture(Result.failure(Error("Only available contracts can be cancelled.")))
+            }
+
+            val refundFuture = when {
+                contract.reward.money != null && contract.reward.money > 0 ->
+                    escrowService.releaseMoney(contract.issuerUUID, contract.reward.money)
+                contract.reward.items != null && contract.reward.items.isNotEmpty() ->
+                    escrowService.returnItems(contract.id, contract.issuerUUID)
+                else -> CompletableFuture.completedFuture(true)
+            }
+
+            refundFuture.thenCompose { success ->
+                if (!success) {
+                    return@thenCompose CompletableFuture.completedFuture(Result.failure(Error("Failed to refund escrow.")))
+                }
+                contract.state = ContractState.CANCELLED
+                contract.updatedAt = Instant.now()
+                contractRepository.save(contract).thenApply {
+                    val player = Bukkit.getPlayer(ownerUUID)
+                    if (player != null) {
+                        scheduler.runOnMainThread(player) {
+                            Bukkit.getPluginManager().callEvent(PlayerContractCancelledEvent(contract.id, ownerUUID))
+                        }
+                    }
+                    Result.success(Unit)
+                }
+            }
+        }
     }
 
     override fun completeContract(contractId: UUID): CompletableFuture<Result<Unit, Error>> {
-        // TODO: Implement completion logic
-        // 1. Get contract, check state (should be DELIVERED)
-        // 2. Release reward from escrow to contractor
-        // 3. Update contract state to COMPLETED
-        // 4. Fire event
-        TODO("Not yet implemented")
+        return contractRepository.findById(contractId).thenCompose { contract ->
+            val contractorId = contract?.contractorUUID
+            if (contract == null || contractorId == null) {
+                return@thenCompose CompletableFuture.completedFuture(Result.failure(Error("Contract not found or not taken.")))
+            }
+            if (contract.state != ContractState.DELIVERED) {
+                return@thenCompose CompletableFuture.completedFuture(Result.failure(Error("Contract items have not been fully delivered yet.")))
+            }
+
+            val rewardFuture = when {
+                contract.reward.money != null && contract.reward.money > 0 ->
+                    escrowService.releaseMoney(contractorId, contract.reward.money)
+                contract.reward.items != null && contract.reward.items.isNotEmpty() ->
+                    escrowService.releaseItems(contract.id, contractorId)
+                else -> CompletableFuture.completedFuture(true)
+            }
+
+            rewardFuture.thenCompose { success ->
+                if (!success) {
+                    return@thenCompose CompletableFuture.completedFuture(Result.failure(Error("Failed to release reward from escrow.")))
+                }
+                contract.state = ContractState.COMPLETED
+                contract.updatedAt = Instant.now()
+                contractRepository.save(contract).thenApply {
+                    val player = Bukkit.getPlayer(contract.issuerUUID)
+                    if (player != null) {
+                        scheduler.runOnMainThread(player) {
+                            Bukkit.getPluginManager().callEvent(PlayerContractAcceptedEvent(contract.id, contract.issuerUUID, contractorId))
+                        }
+                    }
+                    Result.success(Unit)
+                }
+            }
+        }
     }
 
     override fun deliverItems(contractId: UUID, contractorUUID: UUID, items: List<ItemStack>): CompletableFuture<Result<Unit, Error>> {
-        // TODO: Implement delivery logic
-        // 1. Get contract, check contractor and state
-        // 2. Validate delivered items against requirements
-        // 3. Update deliveryProgress map
-        // 4. If all requirements met, change state to DELIVERED
-        // 5. Fire event
-        TODO("Not yet implemented")
+        return contractRepository.findById(contractId).thenCompose { contract ->
+            if (contract == null) {
+                return@thenCompose CompletableFuture.completedFuture(Result.failure(Error("Contract not found.")))
+            }
+            if (contract.contractorUUID != contractorUUID) {
+                return@thenCompose CompletableFuture.completedFuture(Result.failure(Error("You are not the contractor for this contract.")))
+            }
+            if (contract.state != ContractState.IN_PROGRESS) {
+                return@thenCompose CompletableFuture.completedFuture(Result.failure(Error("This contract is not in progress.")))
+            }
+
+            // This is a simplified approach. A robust solution needs to handle item metadata.
+            val newProgress = contract.deliveryProgress.toMutableMap()
+            items.forEach { item ->
+                val key = item.type.name // Simplified key
+                newProgress[key] = newProgress.getOrDefault(key, 0) + item.amount
+            }
+
+            val requirementsMet = contract.requirements.all { requiredItem ->
+                val key = requiredItem.type.name // Simplified key
+                newProgress.getOrDefault(key, 0) >= requiredItem.amount
+            }
+
+            if (requirementsMet) {
+                contract.state = ContractState.DELIVERED
+            }
+            contract.updatedAt = Instant.now()
+            contract.deliveryProgress = newProgress
+
+            contractRepository.save(contract).thenApply {
+                val player = Bukkit.getPlayer(contractorUUID)
+                if (player != null) {
+                    scheduler.runOnMainThread(player) {
+                        Bukkit.getPluginManager().callEvent(PlayerContractDeliveredEvent(contract.id, contractorUUID))
+                    }
+                }
+                Result.success(Unit)
+            }
+        }
     }
 
     override fun expireContracts(): CompletableFuture<Int> {
-        // This logic was already partially implemented, can be reused/refined.
-        TODO("Not yet implemented")
+        val now = Instant.now()
+        val findAvailable = contractRepository.findByState(ContractState.AVAILABLE)
+        val findInProgress = contractRepository.findByState(ContractState.IN_PROGRESS)
+
+        return findAvailable.thenCombine(findInProgress) { available, inProgress ->
+            available + inProgress
+        }.thenCompose { contracts ->
+            val expiredContracts = contracts.filter {
+                it.deadline != null && it.deadline.isBefore(now)
+            }
+
+            if (expiredContracts.isEmpty()) {
+                return@thenCompose CompletableFuture.completedFuture(0)
+            }
+
+            val expirationFutures = expiredContracts.map { contract ->
+                contract.state = ContractState.EXPIRED
+                contract.updatedAt = now
+
+                val refundFuture: CompletableFuture<*> = when {
+                    contract.reward.money != null && contract.reward.money > 0 ->
+                        // Assuming releaseMoney can be used to refund the issuer
+                        escrowService.releaseMoney(contract.issuerUUID, contract.reward.money)
+                    contract.reward.items != null && contract.reward.items.isNotEmpty() ->
+                        escrowService.returnItems(contract.id, contract.issuerUUID)
+                    else -> CompletableFuture.completedFuture(true) // No reward to refund
+                }
+
+                refundFuture.thenCompose {
+                    contractRepository.save(contract)
+                }
+            }
+
+            CompletableFuture.allOf(*expirationFutures.toTypedArray())
+                .thenApply { expiredContracts.size }
+        }
     }
 }

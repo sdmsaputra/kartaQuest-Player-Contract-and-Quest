@@ -2,51 +2,44 @@
 # All 'name' and 'lore' fields support MiniMessage format.
 # Slots are 0-indexed. Size must be a multiple of 9.
 
-main:
-  title: "<blue>Contracts"
+main-menu:
+  title: "<blue>Player Contracts"
   size: 54
   buttons:
-    create:
-      slot: 11
-      material: PAPER
-      name: "<green>Create Contract"
+    profile-header:
+      slot: 4
+      material: PLAYER_HEAD
+      name: "<gold>Your Profile"
       lore:
-        - "<gray>Design a new contract for"
-        - "<gray>other players to complete."
-    list:
-      slot: 15
-      material: BOOK
+        - "<gray>Player: <white><player_name>"
+        - "<gray>Active Contracts: <white><active_contracts>"
+        - "<gray>Completed: <white><completed_contracts>"
+        - "<gray>Total Earned: <green><total_earned>"
+    contract-list:
+      slot: 20
+      material: WRITABLE_BOOK
       name: "<aqua>Contract List"
       lore:
         - "<gray>View all publicly available contracts."
-    inbox:
-      slot: 21
+    inventory:
+      slot: 22
       material: CHEST
-      name: "<gold>Delivery Inbox"
+      name: "<gold>My Inventory"
       lore:
-        - "<gray>Review deliveries for your contracts."
-    my:
-      slot: 23
-      material: PLAYER_HEAD
-      name: "<white>My Contracts"
-      lore:
-        - "<gray>Manage your created and taken contracts."
+        - "<gray>View your delivery inbox,"
+        - "<gray>claims, and tracked items."
     history:
-      slot: 29
+      slot: 24
       material: BOOKSHELF
-      name: "<yellow>History"
+      name: "<yellow>My History"
       lore:
         - "<gray>View your past contracts."
-    stats:
-      slot: 33
+    statistics:
+      slot: 31
       material: NETHER_STAR
-      name: "<green>Statistics"
+      name: "<green>My Statistics"
       lore:
-        - "<gray>View your contract stats."
-    close:
-      slot: 49
-      material: BARRIER
-      name: "<red>Close"
+        - "<gray>View your personal contract stats."
   filler:
     material: GRAY_STAINED_GLASS_PANE
     name: " "

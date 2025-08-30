@@ -9,10 +9,15 @@ command:
   unknown_subcommand: "<red>Unknown subcommand. Use <yellow>/contract help</yellow>."
   player_not_found: "<red>Player <white><player></white> not found."
   reload_success: "<green>Configuration and messages reloaded."
-  usage:
-    take: "<red>Usage: /contract take <contract_id>"
-    cancel: "<red>Usage: /contract cancel <contract_id>"
-    deliver: "<red>Usage: /contract deliver <contract_id>"
+  not-implemented: "<yellow>This command is not yet implemented."
+  invalid-uuid: "<red>'<uuid>' is not a valid contract ID."
+  id-required: "<red>You must specify a contract ID."
+  generic-error: "<red>An unexpected error occurred. Please see the console."
+
+  take-success: "<green>You have taken contract <gold><id></gold>."
+  take-failure: "<red>Could not take contract: <white><reason>"
+  cancel-success: "<green>You have cancelled contract <gold><id></gold>."
+  cancel-failure: "<red>Could not cancel contract: <white><reason>"
 
 contract:
   created_successfully: "<green>Contract <white><id></white> created successfully!"
