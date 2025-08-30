@@ -1,6 +1,7 @@
 package com.minekarta.karta.playercontract.service
 
 import com.minekarta.karta.playercontract.domain.Contract
+import com.minekarta.karta.playercontract.util.Result
 import org.bukkit.inventory.ItemStack
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
@@ -13,9 +14,9 @@ interface ContractService {
     /**
      * Creates a new contract and holds the reward in escrow.
      * @param contract The contract object to create.
-     * @return A future that completes with the created contract.
+     * @return A future that completes with a Result containing the created contract or an error.
      */
-    fun createContract(contract: Contract): CompletableFuture<Contract>
+    fun createContract(contract: Contract): CompletableFuture<Result<Contract, Error>>
 
     /**
      * Retrieves a paginated list of open contracts.

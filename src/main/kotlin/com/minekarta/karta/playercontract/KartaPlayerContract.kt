@@ -3,13 +3,6 @@ package com.minekarta.karta.playercontract
 import com.minekarta.karta.playercontract.command.ContractCommand
 import com.minekarta.karta.playercontract.config.GuiConfigManager
 import com.minekarta.karta.playercontract.config.MessageManager
-import com.minekarta.karta.playercontract.command.ContractCommand
-import com.minekarta.karta.playercontract.config.GuiConfigManager
-import com.minekarta.karta.playercontract.config.MessageManager
-import com.minekarta.karta.playercontract.gui.CreateWizardManager
-import com.minekarta.karta.playercontract.command.ContractCommand
-import com.minekarta.karta.playercontract.config.GuiConfigManager
-import com.minekarta.karta.playercontract.config.MessageManager
 import com.minekarta.karta.playercontract.gui.CreateWizardManager
 import com.minekarta.karta.playercontract.gui.GuiListener
 import com.minekarta.karta.playercontract.listeners.PlayerChatListener

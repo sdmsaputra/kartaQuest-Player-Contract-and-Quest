@@ -36,8 +36,11 @@ class FoliaScheduler(private val plugin: KartaPlayerContract) {
         }
 
         if (isFolia) {
-            player.server.scheduler.runTask(plugin, fullTask)
+            // For Folia, we need to execute the task on the player's region thread.
+            player.scheduler.run(plugin, { _ -> fullTask.run() }, null)
         } else {
+            // For traditional Bukkit/Spigot/Paper, run on the main server thread.
+            @Suppress("DEPRECATION") // The non-deprecated alternative is Folia-specific
             plugin.server.scheduler.runTask(plugin, fullTask)
         }
         return future
@@ -47,13 +50,30 @@ class FoliaScheduler(private val plugin: KartaPlayerContract) {
      * Runs a task asynchronously off the main server thread.
      */
     fun runAsync(task: Runnable): CompletableFuture<Void> {
-        return CompletableFuture.runAsync(task, plugin.server.asyncScheduler)
+        val future = CompletableFuture<Void>()
+        plugin.server.asyncScheduler.runNow(plugin) { _ ->
+            try {
+                task.run()
+                future.complete(null)
+            } catch (e: Exception) {
+                future.completeExceptionally(e)
+            }
+        }
+        return future
     }
 
     /**
      * Runs a supplier asynchronously and returns a CompletableFuture with the result.
      */
     fun <T> supplyAsync(supplier: Supplier<T>): CompletableFuture<T> {
-        return CompletableFuture.supplyAsync(supplier, plugin.server.asyncScheduler)
+        val future = CompletableFuture<T>()
+        plugin.server.asyncScheduler.runNow(plugin) { _ ->
+            try {
+                future.complete(supplier.get())
+            } catch (e: Exception) {
+                future.completeExceptionally(e)
+            }
+        }
+        return future
     }
 }

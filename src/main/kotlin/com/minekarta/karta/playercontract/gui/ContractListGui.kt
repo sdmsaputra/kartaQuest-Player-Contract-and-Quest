@@ -21,11 +21,9 @@ class ContractListGui(
     private val contractsPerPage = 28 // 4 rows of 7
 
     override fun initializeItems() {
-        contractService.getActiveContracts().thenAcceptAsync { contracts ->
-            val paginatedContracts = contracts.drop(currentPage * contractsPerPage).take(contractsPerPage)
-
+        contractService.listOpenContracts(currentPage, contractsPerPage).thenAcceptAsync { contracts ->
             // Populate with contract items
-            paginatedContracts.forEachIndexed { index, contract ->
+            contracts.forEachIndexed { index, contract ->
                 val slot = (index / 7) * 9 + (index % 7) + 10 // Map to GUI slots
                 val item = guiConfig.getButtonItem(
                     "contract-list.contract-item",
