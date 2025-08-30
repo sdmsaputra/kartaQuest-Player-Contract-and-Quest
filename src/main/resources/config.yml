@@ -1,55 +1,36 @@
 # KartaPlayerContract Main Configuration
-# For documentation, please visit [link-to-wiki]
 
 # General Settings
 general:
-  # If true, /contract will open the old contract list directly.
-  # If false, it will open the new main menu.
-  legacyDirectOpenContractList: false
-  # The maximum number of contracts a player can have active (in-progress) at one time.
-  maxActivePerPlayer: 3
+  # The maximum number of contracts a single player can have created and open at one time.
+  max_open_contracts_per_player: 10
+  # The maximum number of contracts a player can have taken and in-progress at one time.
+  max_taken_contracts_per_player: 5
   # Enable bStats metrics. It is highly recommended to keep this enabled to support the developer.
-  enable-bstats: true
+  enable_bstats: true
 
-# Payout Settings
-payout:
-  # Payout mode can be:
-  # VAULT: Pay money using Vault.
-  # ITEM: Give items as a reward.
-  # MIXED: A combination of both.
-  mode: VAULT
-  # When to trigger the payout:
-  # ACCEPT_DELIVERY: When the contract issuer manually accepts the delivery.
-  # AUTO_WHEN_DELIVERED: As soon as the contractor delivers the items (less secure).
-  payOn: ACCEPT_DELIVERY
+# Contract Defaults
+contract_defaults:
+  # Default expiration time for new contracts in days.
+  # Set to -1 to disable expiration by default.
+  default_expiry_days: 7
+  # Optional fee that can be charged for creating a contract.
+  # Can be a flat amount or a percentage (e.g., 5.5%)
+  creation_fee: "0" # No fee by default
 
 # Delivery & Claiming Settings
 delivery:
-  # How should the issuer receive the delivered items?
-  # TO_INVENTORY: Items go directly into the issuer's inventory. Fails if full.
-  # TO_MAILBOX_GUI: Items go into a special claimable GUI/mailbox if inventory is full.
-  claimMode: TO_INVENTORY
+  # How should a player receive items when their inventory is full?
+  # TO_CLAIM_BOX: Items go into a special claimable GUI (/contract claims).
+  # DROP_ON_GROUND: Items are dropped at the player's feet. (Use with caution)
+  overflow_mode: TO_CLAIM_BOX
 
 # Technical Settings
 # It is recommended not to change these unless you know what you are doing.
-folia:
-  # The plugin will attempt to auto-detect Folia.
-  # You can force it on or off here, but auto-detection is recommended.
-  # enabled: auto
-  enabled: true # Forcing for development as per prompt
-
 database:
-  # Database type. Supported: SQLITE, MYSQL (future)
+  # Database type. Supported: SQLITE. MYSQL is planned.
   type: SQLITE
   # SQLite settings
   sqlite:
-    # File path for the SQLite database.
-    # It's relative to the plugin's data folder.
+    # File path for the SQLite database. Relative to the plugin's data folder.
     file: "data.db"
-  # MySQL settings (for future use)
-  # mysql:
-  #   host: "localhost"
-  #   port: 3306
-  #   database: "contracts"
-  #   username: "user"
-  #   password: "password"

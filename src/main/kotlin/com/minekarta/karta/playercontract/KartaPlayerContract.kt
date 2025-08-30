@@ -3,9 +3,20 @@ package com.minekarta.karta.playercontract
 import com.minekarta.karta.playercontract.command.ContractCommand
 import com.minekarta.karta.playercontract.config.GuiConfigManager
 import com.minekarta.karta.playercontract.config.MessageManager
+import com.minekarta.karta.playercontract.command.ContractCommand
+import com.minekarta.karta.playercontract.config.GuiConfigManager
+import com.minekarta.karta.playercontract.config.MessageManager
+import com.minekarta.karta.playercontract.gui.CreateWizardManager
+import com.minekarta.karta.playercontract.command.ContractCommand
+import com.minekarta.karta.playercontract.config.GuiConfigManager
+import com.minekarta.karta.playercontract.config.MessageManager
+import com.minekarta.karta.playercontract.gui.CreateWizardManager
 import com.minekarta.karta.playercontract.gui.GuiListener
+import com.minekarta.karta.playercontract.listeners.PlayerChatListener
 import com.minekarta.karta.playercontract.persistence.*
 import com.minekarta.karta.playercontract.service.*
+import com.minekarta.karta.playercontract.util.ChatInputManager
+import com.minekarta.karta.playercontract.util.FoliaScheduler
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.concurrent.TimeUnit
 
@@ -19,6 +30,8 @@ class KartaPlayerContract : JavaPlugin() {
         private set
     lateinit var contractService: ContractService
         private set
+    lateinit var escrowService: EscrowService
+        private set
     lateinit var inventoryService: InventoryService
         private set
     lateinit var historyService: HistoryService
@@ -29,12 +42,21 @@ class KartaPlayerContract : JavaPlugin() {
         private set
     lateinit var messageManager: MessageManager
         private set
+    lateinit var wizardManager: CreateWizardManager
+        private set
+    lateinit var scheduler: FoliaScheduler
+        private set
+    lateinit var chatInputManager: ChatInputManager
+        private set
 
     override fun onEnable() {
         // 1. Load Configurations
         saveDefaultConfig()
         guiConfigManager = GuiConfigManager(this)
         messageManager = MessageManager(this)
+        wizardManager = CreateWizardManager(this)
+        scheduler = FoliaScheduler(this)
+        chatInputManager = ChatInputManager()
 
         // 2. Initialize Database
         dbManager = DatabaseManager(this)
@@ -48,21 +70,23 @@ class KartaPlayerContract : JavaPlugin() {
 
 
         // 4. Initialize Services
-        contractService = ContractServiceImpl(contractRepository)
+        escrowService = EscrowServiceImpl(this, scheduler)
+        contractService = ContractServiceImpl(contractRepository, escrowService, scheduler)
         inventoryService = InventoryServiceImpl(deliveryPackageRepository)
         historyService = HistoryServiceImpl(historyRepository)
         playerStatsService = PlayerStatsServiceImpl(playerStatsRepository)
 
 
         // 5. Register Commands
-        val contractCommand = ContractCommand(this, guiConfigManager, messageManager)
+        val contractCommand = ContractCommand(this, messageManager, wizardManager)
         getCommand("contract")?.let {
             it.setExecutor(contractCommand)
             it.tabCompleter = contractCommand
         }
 
         // 6. Register Listeners
-        server.pluginManager.registerEvents(GuiListener(), this)
+        server.pluginManager.registerEvents(GuiListener(wizardManager), this)
+        server.pluginManager.registerEvents(PlayerChatListener(chatInputManager), this)
 
         // 8. Register PlaceholderAPI Expansion
         // TODO: Register PAPI expansion if PlaceholderAPI is enabled

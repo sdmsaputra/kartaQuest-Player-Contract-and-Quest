@@ -1,36 +1,53 @@
 # KartaPlayerContract Messages
 # All messages support MiniMessage format.
-# Learn more: https://docs.advntr.dev/minimessage/format.html
+
+prefix: "<gray>[<aqua>KartaContract</aqua>] "
 
 command:
-  no-permission: "<red>You do not have permission to use this command."
-  player-only: "<red>This command can only be used by players."
-  unknown-subcommand: "<red>Unknown subcommand. Use <yellow>/contract help</yellow> for a list of commands."
-  player-not-found: "<red>Player <white><player></white> not found or is not online."
-
-  reload-success: "<green>Configuration files have been reloaded."
-
-  open-usage: "<red>Usage: <white>/contract open <player>"
-  open-success: "<green>Opened main menu for <white><player></white>."
-
-  help-header: "<gold>--- KartaPlayerContract Help ---"
-  help-base: "<yellow>/contract</yellow> <gray>- Opens the main menu."
-  help-reload: "<yellow>/contract reload</yellow> <gray>- Reloads plugin configuration."
-  help-open: "<yellow>/contract open <player></yellow> <gray>- Opens the menu for another player."
+  no_permission: "<red>You do not have permission for that."
+  player_only: "<red>This command can only be used by a player."
+  unknown_subcommand: "<red>Unknown subcommand. Use <yellow>/contract help</yellow>."
+  player_not_found: "<red>Player <white><player></white> not found."
+  reload_success: "<green>Configuration and messages reloaded."
+  usage:
+    take: "<red>Usage: /contract take <contract_id>"
+    cancel: "<red>Usage: /contract cancel <contract_id>"
+    deliver: "<red>Usage: /contract deliver <contract_id>"
 
 contract:
-  # Messages related to contract lifecycle
-  expired: "<yellow>Your contract '<white><contract_title></white>' has expired."
-  completed: "<green>You have successfully completed the contract '<white><contract_title></white>'!"
-  failed: "<red>You have failed the contract '<white><contract_title></white>'."
+  created_successfully: "<green>Contract <white><id></white> created successfully!"
+  creation_failed: "<red>Failed to create contract: <error>"
+  not_enough_money: "<red>You don't have enough money to cover the reward of <amount>."
+  not_enough_items: "<red>You don't have the required items for the reward."
+
+  taken_successfully: "<green>You have taken contract <id>."
+  take_failed: "<red>Failed to take contract: <error>"
+  cannot_take_own: "<red>You cannot take your own contract."
+
+  cancelled_successfully: "<green>You have cancelled contract <id>."
+  cancel_failed: "<red>Failed to cancel contract: <error>"
+  not_your_contract: "<red>You do not own this contract."
+
+  delivery_success: "<green>Items delivered. Waiting for issuer to accept."
+  delivery_failed: "<red>Failed to deliver items: <error>"
+
+  accepted_by_issuer: "<green>Your delivery for contract <id> was accepted! You have been paid."
+  rejected_by_issuer: "<red>Your delivery for contract <id> was rejected. Items have been returned to your claim box."
+
+wizard:
+  started: "<green>Contract wizard started. Follow the GUI steps."
+  cancelled: "<yellow>Contract creation cancelled."
+  item_set: "<green>Request item set to <item>."
+  quantity_set: "<green>Request quantity set to <amount>."
+  reward_type_set: "<green>Reward type set to <type>."
+  reward_set: "<green>Reward has been set."
+
+  error:
+    item_not_set: "<red>You must set an item first."
+    no_reward_item: "<red>You must provide at least one reward item."
 
 gui:
-  # Messages displayed within GUIs
-  contract-list-title: "<blue>Contract List"
-  delivery-inbox-title: "<blue>Delivery Inbox"
-  history-title: "<blue>Contract History"
-  statistics-title: "<blue>Player Statistics"
-
   # Sound effects for GUI interactions
-  open-sound: "BLOCK_CHEST_OPEN"
-  click-sound: "UI_BUTTON_CLICK"
+  open_sound: "BLOCK_CHEST_OPEN"
+  click_sound: "UI_BUTTON_CLICK"
+  error_sound: "BLOCK_ANVIL_PLACE"
